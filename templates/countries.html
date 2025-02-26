@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Country Deep Dive</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet" />
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- noUiSlider CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.min.css" rel="stylesheet" />
+  <style>
+    /* Reset and full viewport height */
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      padding-top: 80px; /* increased to account for larger header */
+    }
+    /* ---------- Header ---------- */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(135deg, #1f1f1f, #323232);
+      color: #e0e0e0;
+      padding: 0 20px;
+      height: 80px;
+      box-sizing: border-box;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1100;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    }
+    /* Container for header-left and header-controls with smaller gap */
+    .header-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+    }
+    .burger-icon {
+      font-size: 24px;
+      cursor: pointer;
+      margin-right: 10px;
+      color: #e0e0e0;
+    }
+    .back-button {
+      background-color: #323232;
+      color: #e0e0e0;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 14px;
+      margin-right: 10px;
+      transition: background-color 0.2s ease;
+    }
+    .back-button:hover {
+      background-color: #3d3d3d;
+    }
+    /* New header controls container for the slider and dropdown title */
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .header-controls .slider-container {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .header-controls label {
+      font-weight: bold;
+      font-size: 12px;
+      margin-bottom: 2px;
+    }
+    /* Triple the width of the year slider */
+    #timeSlider {
+      width: 650px !important;
+    }
+    /* New styling for the combined country title container */
+    .country-title-container {
+      margin: 0 20px;
+      font-size: 20px;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+    }
+    .country-title-container select {
+      background-color: #1f1f1f;
+      border: 1px solid #3d3d3d;
+      color: #e0e0e0;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: large;
+      width: auto;
+    }
+    .country-title-container span {
+      margin-left: 8px;
+    }
+    /* Container for flag and account icon with no gap */
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+    header img {
+      height: 50px;
+      width: auto;
+      border-radius: 4px;
+    }
+    /* Account Icon Styling */
+    .account-icon {
+      font-size: 24px;
+      cursor: pointer;
+      margin-left: 10px;
+      color: #e0e0e0;
+    }
+    /* ---------- Navigation Sidebar ---------- */
+    .sidebar {
+      height: 100%;
+      width: 250px;
+      position: fixed;
+      top: 0;
+      left: -250px;
+      background-color: #1f1f1f;
+      overflow-x: hidden;
+      transition: left 0.3s ease;
+      z-index: 1200;
+      padding-top: 80px;
+      color: #e0e0e0;
+    }
+    .sidebar.active {
+      left: 0;
+    }
+    .sidebar .close-sidebar {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 24px;
+      cursor: pointer;
+    }
+    .sidebar .main-nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .sidebar .main-nav ul li {
+      padding: 15px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .sidebar .main-nav ul li a {
+      text-decoration: none;
+      color: #e0e0e0;
+      font-weight: 500;
+      display: block;
+      transition: background-color 0.2s ease;
+    }
+    .sidebar .main-nav ul li a:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+    /* ---------- Overlay for Sidebar ---------- */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1150;
+      display: none;
+    }
+    .overlay.active {
+      display: block;
+    }
+    /* ---------- Global Blur Overlay ---------- */
+    .global-blur-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(5px);
+      z-index: 1500;
+      display: none;
+    }
+    .global-blur-overlay.active {
+      display: block;
+    }
+    /* ---------- Main Container ---------- */
+    .container {
+      min-height: calc(100vh - 140px);
+      padding: 20px;
+      box-sizing: border-box;
+      width: 90%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+    }
+    /* ---------- 2x2 Charts Grid (static charts) ---------- */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 20px;
+      flex: 1;
+    }
+    .charts-grid .chart {
+      background: #1f1f1f;
+      border: 1px solid #3d3d3d;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+      position: relative;
+      overflow: hidden;
+      height: 360px;
+      padding-bottom: 25px;
+    }
+    .chart canvas,
+    .chart iframe {
+      width: 100% !important;
+      height: 100% !important;
+    }
+    /* ---------- Chart Source Label ---------- */
+    .chart-source {
+      font-size: 10px;
+      color: #e0e0e0;
+      opacity: 0.7;
+      pointer-events: none;
+      margin-top: 5px;
+      text-align: right;
+    }
+    /* ---------- Iframe Charts Grid (same format as charts-grid) ---------- */
+    .iframe-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .iframe-grid .chart {
+      background: #1f1f1f;
+      border: 1px solid #3d3d3d;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+      position: relative;
+      overflow: hidden;
+      height: 360px;
+      padding-bottom: 25px;
+    }
+    .iframe-grid .chart iframe {
+      width: 100% !important;
+      height: 100% !important;
+      border: none;
+      border-radius: 4px;
+    }
+    /* ---------- Custom Charts Container (2-column grid) ---------- */
+    #customChartsContainer {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-top: 20px;
+    }
+    /* For smaller screens, switch to a single column */
+    @media (max-width: 600px) {
+      #customChartsContainer {
+        grid-template-columns: 1fr;
+      }
+    }
+    /* Custom Chart styling to match the static charts */
+    .custom-chart {
+      background: #1f1f1f;
+      border: 1px solid #3d3d3d;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+      height: 400px;
+      padding-bottom: 60px;
+      position: relative;
+      box-sizing: border-box;
+      transition: width 0.3s ease, height 0.3s ease;
+    }
+    .custom-chart canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+    .custom-chart select {
+      background-color: #1f1f1f;
+      border: 1px solid #3d3d3d;
+      color: #e0e0e0;
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    .custom-chart .chart-source {
+      font-size: 10px;
+      color: #e0e0e0;
+      opacity: 0.7;
+      pointer-events: none;
+      margin-top: 5px;
+      text-align: right;
+    }
+    /* ---------- Expand Icon Styling ---------- */
+    .chart .expand-icon,
+    .custom-chart .expand-icon {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      font-size: 18px;
+      cursor: pointer;
+      z-index: 10;
+      color: #e0e0e0;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: background-color 0.2s ease;
+    }
+    .chart .expand-icon:hover,
+    .custom-chart .expand-icon:hover {
+      background: rgba(0, 0, 0, 0.6);
+    }
+    /* ---------- Expanded view styling ---------- */
+    .chart.expanded,
+    .custom-chart.expanded {
+      position: fixed;
+      top: 10%;
+      left: 10%;
+      width: 80%;
+      height: 80%;
+      z-index: 2000;
+      background-color: #1f1f1f;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+      transition: all 0.3s ease;
+    }
+    /* ---------- Custom Chart Placeholder Styling ---------- */
+    .custom-chart-placeholder {
+      background: #1f1f1f;
+      border: 1px dashed #3d3d3d;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+      height: 360px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      color: #e0e0e0;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .custom-chart-placeholder:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    /* ---------- Responsive adjustments ---------- */
+    @media (max-width: 768px) {
+      .charts-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+      }
+      .iframe-grid {
+        grid-template-columns: 1fr;
+      }
+      #customChartsContainer {
+        grid-template-columns: 1fr;
+      }
+    }
+    /* ---------- Hide Iframes and Custom Charts on Specific Screen Size ---------- */
+    @media (max-width: 600px) {
+      .iframe-grid,
+      #customChartsContainer {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <span class="close-sidebar" id="closeSidebar">&times;</span>
+    <nav class="main-nav">
+      <ul>
+        <li><a href="overview.html">Overview</a></li>
+        <li><a href="comparative.html">Comparative View</a></li>
+        <li><a href="data.html"><Data></Data></a></li>
+      </ul>
+    </nav>
+  </div>
+  <!-- Overlay for Sidebar -->
+  <div class="overlay" id="overlay"></div>
+  <!-- Global Blur Overlay -->
+  <div id="globalBlurOverlay" class="global-blur-overlay"></div>
+
+  <!-- Updated Fixed Header with grouped header-main and header-right -->
+  <header>
+    <div class="header-main">
+      <div class="header-left">
+        <span class="burger-icon" id="burgerIcon">&#9776;</span>
+        <a href="overview.html" class="back-button">&#8592; Back</a>
+      </div>
+      <div class="header-controls">
+        <div class="slider-container">
+          <label for="timeSlider">Year Range</label>
+          <div id="timeSlider"></div>
+          <div id="sliderValue"></div>
+        </div>
+        <div class="country-title-container">
+          <select id="countryDropdown"></select>
+          <span id="deepDiveText"> Deep Dive</span>
+        </div>
+      </div>
+    </div>
+    <div class="header-right">
+      <img id="countryFlag" src="" alt="Country Flag" />
+      <span class="account-icon">&#128100;</span>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- 2x2 Grid for Static Charts -->
+    <div class="charts-grid">
+      <div class="chart">
+        <span class="expand-icon">&#x26F6;</span>
+        <canvas id="chartGDP"></canvas>
+        <div class="chart-source">Source: WorldBank</div>
+      </div>
+      <div class="chart">
+        <span class="expand-icon">&#x26F6;</span>
+        <canvas id="chartGDPPerCapita"></canvas>
+        <div class="chart-source">Source: WorldBank</div>
+      </div>
+      <div class="chart">
+        <span class="expand-icon">&#x26F6;</span>
+        <canvas id="chartPopulation"></canvas>
+        <div class="chart-source">Source: WorldBank</div>
+      </div>
+      <div class="chart">
+        <span class="expand-icon">&#x26F6;</span>
+        <canvas id="chartInflation"></canvas>
+        <div class="chart-source">Source: WorldBank</div>
+      </div>
+    </div>
+    <!-- Iframe Charts Grid -->
+    <div class="iframe-grid">
+      <div class="chart">
+        <span class="expand-icon">&#x26F6;</span>
+        <iframe id="gapminderIframe" src="" allowfullscreen></iframe>
+        <div class="chart-source">Source: Gapminder</div>
+      </div>
+      <div class="chart">
+        <span class="expand-icon">&#x26F6;</span>
+        <iframe id="mountainIframe" src="" allowfullscreen></iframe>
+        <div class="chart-source">Source: Gapminder</div>
+      </div>
+    </div>
+    <!-- Custom Charts Container -->
+    <div id="customChartsContainer"></div>
+  </div>
+
+  <!-- noUiSlider JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.min.js"></script>
+  <script>
+    // Array of available indicators for custom charts
+    const availableIndicators = [
+      { value: "NY.GDP.MKTP.CD", text: "GDP (Current US$)" },
+      { value: "NY.GDP.PCAP.CD", text: "GDP per Capita (Current US$)" },
+      { value: "NY.GDP.MKTP.KD.ZG", text: "GDP Growth (Annual %)" },
+      { value: "SP.POP.TOTL", text: "Population, Total" },
+      { value: "SL.UEM.TOTL.ZS", text: "Unemployment (% of labor force)" },
+      { value: "EN.ATM.CO2E.PC", text: "CO₂ Emissions (Metric tons per capita)" },
+      { value: "FP.CPI.TOTL.ZG", text: "Inflation, Consumer Prices (Annual %)" },
+      { value: "NE.EXP.GNFS.CD", text: "Exports of Goods and Services (Current US$)" },
+      { value: "NE.IMP.GNFS.CD", text: "Imports of Goods and Services (Current US$)" },
+      { value: "IT.CEL.SETS.P2", text: "Mobile Cellular Subscriptions (per 100 people)" },
+      { value: "EG.ELC.ACCS.ZS", text: "Access to Electricity (% of Population)" },
+      { value: "SE.XPD.TOTL.GD.ZS", text: "Government Expenditure on Education (% of GDP)" },
+      { value: "SI.POV.DDAY", text: "Poverty Headcount Ratio at $1.90/day" }
+    ];
+
+    // Sidebar Toggle Functionality
+    const burgerIcon = document.getElementById('burgerIcon');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const closeSidebar = document.getElementById('closeSidebar');
+
+    burgerIcon.addEventListener('click', () => {
+      sidebar.classList.add('active');
+      overlay.classList.add('active');
+    });
+    closeSidebar.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+    });
+    overlay.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+    });
+
+    // Global chart variables so we can update them later
+    let chartGDP, chartGDPPerCapita, chartPopulation, chartInflation;
+    let countryIso3 = "unknown";
+    let countriesList = []; // to store all countries from countries.json
+
+    // Function to update the dropdown width based on the selected country's name length.
+    function updateDropdownWidth() {
+      const dropdown = document.getElementById("countryDropdown");
+      const selectedText = dropdown.options[dropdown.selectedIndex].text;
+      dropdown.style.width = (selectedText.length + 4) + "ch";
+    }
+
+    // Utility function to add expand icon functionality to a container.
+    function addExpandIcon(container) {
+      const icon = container.querySelector('.expand-icon');
+      if (!icon) return;
+      icon.addEventListener('click', function (e) {
+        e.stopPropagation();
+        container.classList.toggle('expanded');
+        if (container.classList.contains('expanded')) {
+          icon.innerHTML = "&times;";
+          document.getElementById("globalBlurOverlay").classList.add("active");
+        } else {
+          icon.innerHTML = "&#x26F6;";
+          document.getElementById("globalBlurOverlay").classList.remove("active");
+          if (container.classList.contains("custom-chart")) {
+            const canvas = container.querySelector("canvas");
+            if (canvas) {
+              canvas.style.width = "100%";
+            }
+            if (container.chartInstance && typeof container.chartInstance.resize === 'function') {
+              container.chartInstance.resize();
+            }
+          }
+        }
+      });
+    }
+
+    // Function to add expand icon functionality to all current static charts.
+    function initExpandIcons() {
+      document.querySelectorAll('.chart').forEach(addExpandIcon);
+    }
+
+    // Update custom charts when filters change
+    function updateCustomCharts() {
+      const sliderElem = document.getElementById('timeSlider');
+      const sliderValues = sliderElem.noUiSlider ? sliderElem.noUiSlider.get() : [2010, 2020];
+      const startYear = parseInt(sliderValues[0]);
+      const endYear = parseInt(sliderValues[1]);
+      document.querySelectorAll("#customChartsContainer .custom-chart").forEach(chartContainer => {
+        const canvas = chartContainer.querySelector("canvas");
+        const select = chartContainer.querySelector("select");
+        if (canvas && select && chartContainer.chartInstance) {
+          let indicator = select.value;
+          fetchTimeSeriesData(countryIso3, indicator, startYear, endYear)
+            .then(data => {
+              chartContainer.chartInstance.data.labels = data.years;
+              chartContainer.chartInstance.data.datasets[0].data = data.values;
+              chartContainer.chartInstance.options.plugins.title.text = `${availableIndicators.find(x => x.value === indicator).text} ${startYear}-${endYear}`;
+              chartContainer.chartInstance.update();
+            });
+        }
+      });
+    }
+
+    // Populate the country dropdown and update deep dive when changed.
+    async function populateCountryDropdown(defaultCountry) {
+      try {
+        const response = await fetch("countries.json");
+        const countries = await response.json();
+        countriesList = countries;
+        const dropdown = document.getElementById("countryDropdown");
+        dropdown.innerHTML = "";
+        countries.forEach(country => {
+          const option = document.createElement("option");
+          option.value = country.id;
+          option.textContent = country.name;
+          dropdown.appendChild(option);
+        });
+        dropdown.value = defaultCountry || countries[0].id;
+        updateDropdownWidth();
+        updateDeepDive(dropdown.value);
+      } catch (e) {
+        console.error("Error loading countries.json", e);
+      }
+    }
+
+    // Update header, charts, and Gapminder diagrams when a new country is selected.
+    async function updateDeepDive(selectedCountry) {
+      countryIso3 = selectedCountry;
+      let countryInfo = countriesList.find(c => c.id === countryIso3) || { name: countryIso3, iso2Code: "us" };
+      document.getElementById("countryFlag").src = `https://flagcdn.com/w160/${countryInfo.iso2Code.toLowerCase()}.png`;
+      document.getElementById("countryFlag").alt = countryInfo.name + " Flag";
+      document.getElementById("gapminderIframe").src = `//www.gapminder.org/tools/?embedded=true#$model$markers$pyramid$data$filter$dimensions$geo$/$or@$geo$/$in@=${countryIso3.toLowerCase()};;;;;;;;;;;&chart-type=popbyage&url=v2`;
+      document.getElementById("mountainIframe").src = `//www.gapminder.org/tools/?embedded=true#$model$markers$mountain$data$filter$dimensions$geo$/$or@$geo$/$in@=${countryIso3.toLowerCase()};;;;;;;;;&billy$encoding$selected$data$;;;;;;&chart-type=mountain&url=v2`;
+      const sliderElem = document.getElementById('timeSlider');
+      const sliderValues = sliderElem.noUiSlider ? sliderElem.noUiSlider.get() : [2010, 2020];
+      await updateCharts(parseInt(sliderValues[0]), parseInt(sliderValues[1]));
+      updateCustomCharts();
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlCountry = urlParams.get("country");
+      const defaultCountry = urlCountry || "USA";
+      await populateCountryDropdown(defaultCountry);
+      const dropdown = document.getElementById("countryDropdown");
+      dropdown.addEventListener("change", (e) => {
+        updateDropdownWidth();
+        updateDeepDive(e.target.value);
+      });
+      const slider = document.getElementById('timeSlider');
+      noUiSlider.create(slider, {
+        start: [2010, 2020],
+        connect: true,
+        step: 1,
+        range: {
+          'min': 1960,
+          'max': 2024
+        },
+        format: {
+          to: value => Math.round(value),
+          from: value => Number(value)
+        }
+      });
+      const sliderValue = document.getElementById('sliderValue');
+      slider.noUiSlider.on('update', function (values) {
+        sliderValue.textContent = `From ${values[0]} to ${values[1]}`;
+      });
+      slider.noUiSlider.on('set', async function (values) {
+        const startYear = values[0];
+        const endYear = values[1];
+        await updateCharts(startYear, endYear);
+        updateCustomCharts();
+      });
+      await updateCharts(2010, 2020);
+      initExpandIcons();
+      ensureCustomChartPlaceholders();
+    });
+
+    async function updateCharts(startYear, endYear) {
+      const gdpIndicator = "NY.GDP.MKTP.CD";
+      const gdpPerCapitaPPPIndicator = "NY.GDP.PCAP.PP.KD";
+      const populationIndicator = "SP.POP.TOTL";
+      const inflationIndicator = "FP.CPI.TOTL.ZG";
+
+      const [gdpData, gdpPerCapitaData, popData, inflationData] = await Promise.all([
+        fetchTimeSeriesData(countryIso3, gdpIndicator, startYear, endYear),
+        fetchTimeSeriesData(countryIso3, gdpPerCapitaPPPIndicator, startYear, endYear),
+        fetchTimeSeriesData(countryIso3, populationIndicator, startYear, endYear),
+        fetchTimeSeriesData(countryIso3, inflationIndicator, startYear, endYear)
+      ]);
+
+      const gdpValues = gdpData.values.map(v => v / 1e12);
+      const gdpPerCapitaValues = gdpPerCapitaData.values.map(v => v / 1000);
+      const popValues = popData.values.map(v => v / 1e6);
+
+      if (!chartGDP) {
+        chartGDP = new Chart(document.getElementById("chartGDP").getContext("2d"), {
+          type: 'line',
+          data: {
+            labels: gdpData.years,
+            datasets: [{
+              label: 'GDP (Trillion USD)',
+              data: gdpValues,
+              borderColor: 'rgba(0, 150, 136, 1)',
+              backgroundColor: 'rgba(0, 150, 136, 0.2)',
+              fill: true,
+              tension: 0.1
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              title: { display: true, text: `GDP (Trillion USD) ${startYear}-${endYear}` }
+            }
+          }
+        });
+
+        chartGDPPerCapita = new Chart(document.getElementById("chartGDPPerCapita").getContext("2d"), {
+          type: 'line',
+          data: {
+            labels: gdpPerCapitaData.years,
+            datasets: [{
+              label: 'GDP per Capita PPP (Thousand USD)',
+              data: gdpPerCapitaValues,
+              borderColor: 'rgba(255, 159, 64, 1)',
+              backgroundColor: 'rgba(255, 159, 64, 0.2)',
+              fill: true,
+              tension: 0.1
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              title: { display: true, text: `GDP per Capita PPP (Thousand USD) ${startYear}-${endYear}` }
+            }
+          }
+        });
+
+        chartPopulation = new Chart(document.getElementById("chartPopulation").getContext("2d"), {
+          type: 'line',
+          data: {
+            labels: popData.years,
+            datasets: [{
+              label: 'Population (Millions)',
+              data: popValues,
+              borderColor: 'rgba(63, 81, 181, 1)',
+              backgroundColor: 'rgba(63, 81, 181, 0.2)',
+              fill: true,
+              tension: 0.1
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              title: { display: true, text: `Population (Millions) ${startYear}-${endYear}` }
+            }
+          }
+        });
+
+        chartInflation = new Chart(document.getElementById("chartInflation").getContext("2d"), {
+          type: 'line',
+          data: {
+            labels: inflationData.years,
+            datasets: [{
+              label: 'Inflation (%)',
+              data: inflationData.values,
+              borderColor: 'rgba(244, 67, 54, 1)',
+              backgroundColor: 'rgba(244, 67, 54, 0.2)',
+              fill: true,
+              tension: 0.1
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              title: { display: true, text: `Inflation (%) ${startYear}-${endYear}` }
+            }
+          }
+        });
+      } else {
+        chartGDP.data.labels = gdpData.years;
+        chartGDP.data.datasets[0].data = gdpValues;
+        chartGDP.options.plugins.title.text = `GDP (Trillion USD) ${startYear}-${endYear}`;
+        chartGDP.update();
+
+        chartGDPPerCapita.data.labels = gdpPerCapitaData.years;
+        chartGDPPerCapita.data.datasets[0].data = gdpPerCapitaValues;
+        chartGDPPerCapita.options.plugins.title.text = `GDP per Capita PPP (Thousand USD) ${startYear}-${endYear}`;
+        chartGDPPerCapita.update();
+
+        chartPopulation.data.labels = popData.years;
+        chartPopulation.data.datasets[0].data = popValues;
+        chartPopulation.options.plugins.title.text = `Population (Millions) ${startYear}-${endYear}`;
+        chartPopulation.update();
+
+        chartInflation.data.labels = inflationData.years;
+        chartInflation.data.datasets[0].data = inflationData.values;
+        chartInflation.options.plugins.title.text = `Inflation (%) ${startYear}-${endYear}`;
+        chartInflation.update();
+      }
+    }
+
+    async function fetchTimeSeriesData(country, indicator, startYear, endYear) {
+      const url = `https://api.worldbank.org/v2/country/${country}/indicator/${indicator}?format=json&per_page=1000&date=${startYear}:${endYear}`;
+      try {
+        const response = await fetch(url);
+        const json = await response.json();
+        if (!json || json.length < 2) {
+          return { years: [], values: [] };
+        }
+        const data = json[1].filter(d => d.value !== null);
+        data.sort((a, b) => parseInt(a.date) - parseInt(b.date));
+        const years = data.map(d => d.date);
+        const values = data.map(d => d.value);
+        return { years, values };
+      } catch (error) {
+        console.error("Error fetching data for", indicator, error);
+        return { years: [], values: [] };
+      }
+    }
+
+    async function createCustomChartInstanceInPlace(placeholder) {
+      const sliderElem = document.getElementById('timeSlider');
+      const sliderValues = sliderElem.noUiSlider ? sliderElem.noUiSlider.get() : [2010, 2020];
+      const startYear = parseInt(sliderValues[0]);
+      const endYear = parseInt(sliderValues[1]);
+
+      const chartDiv = document.createElement("div");
+      chartDiv.classList.add("custom-chart");
+
+      const expandIcon = document.createElement("span");
+      expandIcon.classList.add("expand-icon");
+      expandIcon.innerHTML = "&#x26F6;";
+      chartDiv.appendChild(expandIcon);
+      addExpandIcon(chartDiv);
+
+      const select = document.createElement("select");
+      availableIndicators.forEach(ind => {
+        const opt = document.createElement("option");
+        opt.value = ind.value;
+        opt.textContent = ind.text;
+        select.appendChild(opt);
+      });
+      chartDiv.appendChild(select);
+
+      const canvas = document.createElement("canvas");
+      chartDiv.appendChild(canvas);
+
+      const sourceDiv = document.createElement("div");
+      sourceDiv.classList.add("chart-source");
+      sourceDiv.textContent = "Source: WorldBank";
+      chartDiv.appendChild(sourceDiv);
+
+      placeholder.parentNode.replaceChild(chartDiv, placeholder);
+
+      let indicator = select.value;
+      let data = await fetchTimeSeriesData(countryIso3, indicator, startYear, endYear);
+      let chartInstance = new Chart(canvas.getContext("2d"), {
+        type: 'line',
+        data: {
+          labels: data.years,
+          datasets: [{
+            label: availableIndicators.find(x => x.value === indicator).text,
+            data: data.values,
+            borderColor: 'rgba(255, 255, 255, 0.9)',
+            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            fill: true,
+            tension: 0.1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            title: { display: true, text: `${availableIndicators.find(x => x.value === indicator).text} ${startYear}-${endYear}` }
+          }
+        }
+      });
+      chartDiv.chartInstance = chartInstance;
+
+      select.addEventListener("change", async function () {
+        indicator = select.value;
+        let newData = await fetchTimeSeriesData(countryIso3, indicator, startYear, endYear);
+        chartInstance.data.labels = newData.years;
+        chartInstance.data.datasets[0].data = newData.values;
+        chartInstance.data.datasets[0].label = availableIndicators.find(x => x.value === indicator).text;
+        chartInstance.options.plugins.title.text = `${availableIndicators.find(x => x.value === indicator).text} ${startYear}-${endYear}`;
+        chartInstance.update();
+      });
+
+      ensureCustomChartPlaceholders();
+    }
+
+    function ensureCustomChartPlaceholders() {
+      const container = document.getElementById("customChartsContainer");
+      const placeholders = container.querySelectorAll(".custom-chart-placeholder");
+      const count = placeholders.length;
+      for (let i = count; i < 2; i++) {
+        const placeholder = document.createElement("div");
+        placeholder.classList.add("custom-chart-placeholder");
+        placeholder.textContent = "+";
+        placeholder.addEventListener("click", function () {
+          createCustomChartInstanceInPlace(this);
+        });
+        container.appendChild(placeholder);
+      }
+    }
+  </script>
+</body>
+</html>
