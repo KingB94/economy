@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -19,15 +18,12 @@
       margin: 0;
       padding: 0;
     }
-
     body {
       font-family: 'Roboto', sans-serif;
       background-color: #121212;
       color: #e0e0e0;
-      padding-top: 80px;
-      /* increased to account for larger header */
+      padding-top: 80px; /* increased to account for larger header */
     }
-
     /* ---------- Header ---------- */
     header {
       display: flex;
@@ -45,26 +41,22 @@
       z-index: 1100;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
     }
-
     /* Container for header-left and header-controls with smaller gap */
     .header-main {
       display: flex;
       align-items: center;
       gap: 10px;
     }
-
     .header-left {
       display: flex;
       align-items: center;
     }
-
     .burger-icon {
       font-size: 24px;
       cursor: pointer;
       margin-right: 10px;
       color: #e0e0e0;
     }
-
     .back-button {
       background-color: #323232;
       color: #e0e0e0;
@@ -76,35 +68,29 @@
       margin-right: 10px;
       transition: background-color 0.2s ease;
     }
-
     .back-button:hover {
       background-color: #3d3d3d;
     }
-
     /* New header controls container for the slider and dropdown title */
     .header-controls {
       display: flex;
       align-items: center;
       gap: 15px;
     }
-
     .header-controls .slider-container {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
     }
-
     .header-controls label {
       font-weight: bold;
       font-size: 12px;
       margin-bottom: 2px;
     }
-
     /* Triple the width of the year slider */
     #timeSlider {
       width: 650px !important;
     }
-
     /* New styling for the combined country title container */
     .country-title-container {
       margin: 0 20px;
@@ -113,7 +99,6 @@
       display: flex;
       align-items: center;
     }
-
     .country-title-container select {
       background-color: #1f1f1f;
       border: 1px solid #3d3d3d;
@@ -123,24 +108,20 @@
       font-size: large;
       width: auto;
     }
-
     .country-title-container span {
       margin-left: 8px;
     }
-
     /* Container for flag and account icon with no gap */
     .header-right {
       display: flex;
       align-items: center;
       gap: 0;
     }
-
     header img {
       height: 50px;
       width: auto;
       border-radius: 4px;
     }
-
     /* Account Icon Styling */
     .account-icon {
       font-size: 24px;
@@ -148,7 +129,6 @@
       margin-left: 10px;
       color: #e0e0e0;
     }
-
     /* ---------- Navigation Sidebar ---------- */
     .sidebar {
       height: 100%;
@@ -163,11 +143,9 @@
       padding-top: 80px;
       color: #e0e0e0;
     }
-
     .sidebar.active {
       left: 0;
     }
-
     .sidebar .close-sidebar {
       position: absolute;
       top: 15px;
@@ -175,18 +153,15 @@
       font-size: 24px;
       cursor: pointer;
     }
-
     .sidebar .main-nav ul {
       list-style: none;
       padding: 0;
       margin: 0;
     }
-
     .sidebar .main-nav ul li {
       padding: 15px 20px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
-
     .sidebar .main-nav ul li a {
       text-decoration: none;
       color: #e0e0e0;
@@ -194,12 +169,10 @@
       display: block;
       transition: background-color 0.2s ease;
     }
-
     .sidebar .main-nav ul li a:hover {
       background: rgba(255, 255, 255, 0.1);
       border-radius: 4px;
     }
-
     /* ---------- Overlay for Sidebar ---------- */
     .overlay {
       position: fixed;
@@ -211,11 +184,9 @@
       z-index: 1150;
       display: none;
     }
-
     .overlay.active {
       display: block;
     }
-
     /* ---------- Global Blur Overlay ---------- */
     .global-blur-overlay {
       position: fixed;
@@ -228,11 +199,9 @@
       z-index: 1500;
       display: none;
     }
-
     .global-blur-overlay.active {
       display: block;
     }
-
     /* ---------- Main Container ---------- */
     .container {
       min-height: calc(100vh - 140px);
@@ -243,7 +212,6 @@
       display: flex;
       flex-direction: column;
     }
-
     /* ---------- 2x2 Charts Grid (static charts) ---------- */
     .charts-grid {
       display: grid;
@@ -252,7 +220,6 @@
       gap: 20px;
       flex: 1;
     }
-
     .charts-grid .chart {
       background: #1f1f1f;
       border: 1px solid #3d3d3d;
@@ -263,13 +230,11 @@
       height: 360px;
       padding-bottom: 25px;
     }
-
     .chart canvas,
     .chart iframe {
       width: 100% !important;
       height: 100% !important;
     }
-
     /* ---------- Chart Source Label ---------- */
     .chart-source {
       font-size: 10px;
@@ -279,7 +244,6 @@
       margin-top: 5px;
       text-align: right;
     }
-
     /* ---------- Iframe Charts Grid (same format as charts-grid) ---------- */
     .iframe-grid {
       display: grid;
@@ -287,7 +251,6 @@
       gap: 20px;
       margin-top: 20px;
     }
-
     .iframe-grid .chart {
       background: #1f1f1f;
       border: 1px solid #3d3d3d;
@@ -298,14 +261,12 @@
       height: 360px;
       padding-bottom: 25px;
     }
-
     .iframe-grid .chart iframe {
       width: 100% !important;
       height: 100% !important;
       border: none;
       border-radius: 4px;
     }
-
     /* ---------- Custom Charts Container (2-column grid) ---------- */
     #customChartsContainer {
       display: grid;
@@ -313,14 +274,12 @@
       gap: 20px;
       margin-top: 20px;
     }
-
     /* For smaller screens, switch to a single column */
     @media (max-width: 600px) {
       #customChartsContainer {
         grid-template-columns: 1fr;
       }
     }
-
     /* Custom Chart styling to match the static charts */
     .custom-chart {
       background: #1f1f1f;
@@ -333,12 +292,10 @@
       box-sizing: border-box;
       transition: width 0.3s ease, height 0.3s ease;
     }
-
     .custom-chart canvas {
       width: 100% !important;
       height: 100% !important;
     }
-
     .custom-chart select {
       background-color: #1f1f1f;
       border: 1px solid #3d3d3d;
@@ -347,7 +304,6 @@
       border-radius: 4px;
       margin-bottom: 10px;
     }
-
     .custom-chart .chart-source {
       font-size: 10px;
       color: #e0e0e0;
@@ -356,7 +312,6 @@
       margin-top: 5px;
       text-align: right;
     }
-
     /* ---------- Expand Icon Styling ---------- */
     .chart .expand-icon,
     .custom-chart .expand-icon {
@@ -372,12 +327,10 @@
       border-radius: 4px;
       transition: background-color 0.2s ease;
     }
-
     .chart .expand-icon:hover,
     .custom-chart .expand-icon:hover {
       background: rgba(0, 0, 0, 0.6);
     }
-
     /* ---------- Expanded view styling ---------- */
     .chart.expanded,
     .custom-chart.expanded {
@@ -391,7 +344,6 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
       transition: all 0.3s ease;
     }
-
     /* ---------- Custom Chart Placeholder Styling ---------- */
     .custom-chart-placeholder {
       background: #1f1f1f;
@@ -407,30 +359,24 @@
       cursor: pointer;
       transition: background 0.3s ease;
     }
-
     .custom-chart-placeholder:hover {
       background: rgba(255, 255, 255, 0.1);
     }
-
     /* ---------- Responsive adjustments ---------- */
     @media (max-width: 768px) {
       .charts-grid {
         grid-template-columns: 1fr;
         grid-template-rows: auto;
       }
-
       .iframe-grid {
         grid-template-columns: 1fr;
       }
-
       #customChartsContainer {
         grid-template-columns: 1fr;
       }
     }
-
     /* ---------- Hide Iframes and Custom Charts on Specific Screen Size ---------- */
     @media (max-width: 600px) {
-
       .iframe-grid,
       #customChartsContainer {
         display: none;
@@ -438,7 +384,6 @@
     }
   </style>
 </head>
-
 <body>
   <!-- Navigation Sidebar -->
   <div class="sidebar" id="sidebar">
@@ -447,7 +392,7 @@
       <ul>
         <li><a href="overview.html">Overview</a></li>
         <li><a href="comparative.html">Comparative View</a></li>
-        <li><a href="data.html">Data</a></li>
+        <li><a href="data.html"><Data></Data></a></li>
       </ul>
     </nav>
   </div>
@@ -936,5 +881,4 @@
     }
   </script>
 </body>
-
 </html>
