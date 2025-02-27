@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Data Explorer</title>
+  <!-- Google Fonts for header -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet" />
+  <!-- Select2 for enhanced dropdowns -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+  <!-- noUiSlider CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.css" />
+  <!-- Load PptxGenJS from an alternate CDN -->
+  <script defer src="https://unpkg.com/pptxgenjs/dist/pptxgen.bundle.js"></script>
+  <style>
+    /* ---------- Global Styles & Reset ---------- */
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', sans-serif;
+      background-color: #121212;
+      padding-top: 60px;
+      color: #e0e0e0;
+    }
+    /* ---------- Fixed Header ---------- */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: linear-gradient(135deg, #1f1f1f, #323232);
+      color: #e0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 1100;
+    }
+    .burger-icon { font-size: 24px; cursor: pointer; margin-right: 10px; color: #e0e0e0; }
+    .header-left { display: flex; align-items: center; }
+    header h1 { margin: 0 10px; font-size: 20px; text-align: center; flex: 1; }
+    /* ---------- Navigation Sidebar ---------- */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -250px;
+      width: 250px;
+      height: 100%;
+      background-color: #1f1f1f;
+      color: #e0e0e0;
+      padding-top: 60px;
+      transition: left 0.3s ease;
+      z-index: 1200;
+      font-family: 'Roboto', sans-serif;
+    }
+    .sidebar.active { left: 0; }
+    .sidebar .close-sidebar {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 24px;
+      cursor: pointer;
+      color: #e0e0e0;
+    }
+    .sidebar .main-nav ul { list-style: none; padding: 0; margin: 0; }
+    .sidebar .main-nav ul li {
+      padding: 15px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .sidebar .main-nav ul li a {
+      text-decoration: none;
+      color: #e0e0e0;
+      font-weight: 500;
+      display: block;
+      transition: background-color 0.2s ease;
+    }
+    .sidebar .main-nav ul li a:hover { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
+    /* ---------- Overlay for Sidebar ---------- */
+    .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 1150; display: none; }
+    .overlay.active { display: block; }
+    /* ---------- Main Container ---------- */
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      background-color: #1e1e1e;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    .filters { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 20px; }
+    .filter-item { flex: 1 1 200px; display: flex; flex-direction: column; }
+    .filter-item label { font-weight: 600; margin-bottom: 5px; color: #e0e0e0; font-size: 0.9em; }
+    #yearRangeDisplay { margin-top: 5px; font-size: 0.9em; color: #ccc; }
+  </style>
+</head>
+<body>
+  <!-- Navigation Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <span class="close-sidebar" id="closeSidebar">&times;</span>
+    <nav class="main-nav">
+      <ul>
+        <li><a href="{{ url_for('overview') }}">Overview</a></li>
+        <li><a href="{{ url_for('comparative') }}">Comparative</a></li>
+      </ul>
+    </nav>
+  </div>
+  <!-- Overlay for Sidebar -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Fixed Header -->
+  <header>
+    <div class="header-left">
+      <span class="burger-icon" id="burgerIcon">&#9776;</span>
+    </div>
+    <h1>Data Explorer</h1>
+    <div style="width:24px;"></div>
+  </header>
+
+  <div class="container">
+    <h2>Data Explorer</h2>
+    <div class="filters">
+      <div class="filter-item">
+        <label for="countrySelect">Select Countries:</label>
+        <select id="countrySelect" multiple style="width:100%"></select>
+      </div>
+      <div class="filter-item">
+        <label for="kpiSelect">Select KPIs:</label>
+        <select id="kpiSelect" multiple style="width:100%"></select>
+      </div>
+      <div class="filter-item">
+        <label for="yearRangeSlider">Select Year Range:</label>
+        <div id="yearRangeSlider"></div>
+        <p id="yearRangeDisplay">Selected Years: 2000 - 2020</p>
+      </div>
+      <div class="filter-item" style="align-self: flex-end;">
+        <button id="loadDataBtn">Load Data</button>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table id="dataTable">
+        <thead></thead>
+        <tbody></tbody>
+      </table>
+      <div class="pagination hidden" id="paginationControls">
+        <button id="prevPageBtn">Previous</button>
+        <span id="pageInfo"></span>
+        <button id="nextPageBtn">Next</button>
+      </div>
+      <div class="download-buttons">
+        <button id="downloadData">Download Data</button>
+        <button id="createPresentation">Create Presentation</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS Libraries -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Custom Script -->
+  <script>
+    // --- Groq API call to Llama (using your provided API key) ---
+    async function generateDescription(promptText) {
+      const apiKey = "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";
+      const url = "https://api.groq.com/v1/chat/completions";
+      const body = {
+        messages: [
+          { role: "system", content: "You are an expert in global economic data. When provided with a set of economic data, you will give a 3 sentence description of it." },
+          { role: "user", content: promptText }
+        ],
+        model: "llama3-8b-8192"
+      };
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}`
+          },
+          body: JSON.stringify(body)
+        });
+        if (!response.ok) {
+          return "Based on the data, there is some super interesting economic data visible and these countries will be affected by it.";
+        }
+        const data = await response.json();
+        return data.choices[0].message.content || "Based on the data, there is some super interesting economic data visible and these countries will be affected by it.";
+      } catch (err) {
+        console.error("Error calling Groq API:", err);
+        return "Based on the data, there is some super interesting economic data visible and these countries will be affected by it.";
+      }
+    }
+
+    // --- Main Application Code ---
+    window.addEventListener('load', () => {
+      // Sidebar toggle functionality
+      const burgerIcon = document.getElementById('burgerIcon');
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('overlay');
+      const closeSidebar = document.getElementById('closeSidebar');
+
+      burgerIcon.addEventListener('click', () => {
+        sidebar.classList.add('active');
+        overlay.classList.add('active');
+      });
+      closeSidebar.addEventListener('click', () => {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+      });
+      overlay.addEventListener('click', () => {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+      });
+
+      // Initialize Select2 on dropdowns
+      $("#countrySelect").select2({ placeholder: "Select countries" });
+      $("#kpiSelect").select2({ placeholder: "Select KPIs" });
+
+      // Populate country select from embedded list
+      const countries = [
+        { name: "United States", id: "USA" },
+        { name: "Canada", id: "CAN" },
+        { name: "United Kingdom", id: "GBR" },
+        { name: "Germany", id: "DEU" },
+        { name: "France", id: "FRA" }
+      ];
+      countries.forEach(country => {
+        const option = new Option(country.name, country.id, false, false);
+        $("#countrySelect").append(option);
+      });
+      $("#countrySelect").trigger("change");
+
+      // Define KPIs
+      const kpis = [
+        { id: "NY.GDP.MKTP.CD", name: "GDP (Current US$)" },
+        { id: "NY.GDP.PCAP.CD", name: "GDP per Capita (Current US$)" },
+        { id: "SL.UEM.TOTL.ZS", name: "Unemployment (% of labor force)" },
+        { id: "FP.CPI.TOTL.ZG", name: "Inflation (annual %)" }
+      ];
+      kpis.forEach(kpi => {
+        const option = new Option(kpi.name, kpi.id, false, false);
+        $("#kpiSelect").append(option);
+      });
+      $("#kpiSelect").trigger("change");
+
+      // Initialize noUiSlider for year range
+      const yearSlider = document.getElementById('yearRangeSlider');
+      noUiSlider.create(yearSlider, {
+        start: [2000, 2020],
+        connect: true,
+        step: 1,
+        range: { min: 1960, max: 2023 },
+        tooltips: false,
+        format: { to: value => Math.round(value), from: value => Number(value) }
+      });
+      yearSlider.noUiSlider.on('update', function (values) {
+        document.getElementById("yearRangeDisplay").textContent = "Selected Years: " + values[0] + " - " + values[1];
+      });
+
+      // Table pagination
+      let fullData = [];
+      let currentPage = 1;
+      const rowsPerPage = 50;
+
+      document.getElementById("loadDataBtn").addEventListener("click", loadData);
+
+      async function loadData() {
+        const selectedCountries = $("#countrySelect").val();
+        const selectedKpis = $("#kpiSelect").val();
+        const yrRange = yearSlider.noUiSlider.get().map(Number);
+        if (!selectedCountries || !selectedKpis || selectedCountries.length === 0 || selectedKpis.length === 0) {
+          alert("Please select at least one country and one KPI.");
+          return;
+        }
+        fullData = [];
+        for (const country of selectedCountries) {
+          let countryData = {};
+          for (const kpi of selectedKpis) {
+            const data = await fetchTimeSeriesData(country, kpi);
+            const filtered = data.years.map((yr, idx) => ({ year: parseInt(yr), value: data.values[idx] }))
+              .filter(item => item.year >= yrRange[0] && item.year <= yrRange[1]);
+            countryData[kpi] = filtered;
+          }
+          let yearsSet = new Set();
+          selectedKpis.forEach(kpi => { countryData[kpi].forEach(item => yearsSet.add(item.year)); });
+          let yearsArray = Array.from(yearsSet).sort((a, b) => a - b);
+          for (const yr of yearsArray) {
+            const row = { country: country, year: yr };
+            selectedKpis.forEach(kpi => {
+              const val = countryData[kpi].find(item => item.year === yr);
+              row[kpi] = val ? val.value : "";
+            });
+            fullData.push(row);
+          }
+        }
+        fullData.sort((a, b) => a.country.localeCompare(b.country) || a.year - b.year);
+        currentPage = 1;
+        renderTable();
+        document.getElementById("paginationControls").classList.remove("hidden");
+      }
+
+      async function fetchTimeSeriesData(country, indicator) {
+        const url = `https://api.worldbank.org/v2/country/${country}/indicator/${indicator}?format=json&per_page=1000`;
+        try {
+          const response = await fetch(url);
+          const json = await response.json();
+          if (!json || json.length < 2) return { years: [], values: [] };
+          const data = json[1].filter(d => d.value !== null);
+          data.sort((a, b) => parseInt(a.date) - parseInt(b.date));
+          return { years: data.map(d => d.date), values: data.map(d => d.value) };
+        } catch (error) {
+          console.error("Error fetching data for", indicator, error);
+          return { years: [], values: [] };
+        }
+      }
+
+      function renderTable() {
+        const tableHead = document.querySelector("#dataTable thead");
+        const tableBody = document.querySelector("#dataTable tbody");
+        tableHead.innerHTML = "";
+        tableBody.innerHTML = "";
+        const selectedKpis = $("#kpiSelect").val();
+        const headerRow = document.createElement("tr");
+        const headers = ["Country", "Year"].concat(selectedKpis.map(kpiId => {
+          const obj = kpis.find(item => item.id === kpiId);
+          return obj ? obj.name : kpiId;
+        }));
+        headers.forEach(text => {
+          const th = document.createElement("th");
+          th.textContent = text;
+          headerRow.appendChild(th);
+        });
+        tableHead.appendChild(headerRow);
+        const startIndex = (currentPage - 1) * rowsPerPage;
+        const paginatedData = fullData.slice(startIndex, startIndex + rowsPerPage);
+        paginatedData.forEach(row => {
+          const tr = document.createElement("tr");
+          const tdCountry = document.createElement("td");
+          tdCountry.textContent = row.country;
+          tr.appendChild(tdCountry);
+          const tdYear = document.createElement("td");
+          tdYear.textContent = row.year;
+          tr.appendChild(tdYear);
+          selectedKpis.forEach(kpi => {
+            const td = document.createElement("td");
+            td.textContent = row[kpi];
+            tr.appendChild(td);
+          });
+          tableBody.appendChild(tr);
+        });
+        document.getElementById("pageInfo").textContent = `Page ${currentPage} of ${Math.ceil(fullData.length / rowsPerPage)}`;
+      }
+
+      document.getElementById("prevPageBtn").addEventListener("click", () => { if (currentPage > 1) { currentPage--; renderTable(); } });
+      document.getElementById("nextPageBtn").addEventListener("click", () => { if (currentPage < Math.ceil(fullData.length / rowsPerPage)) { currentPage++; renderTable(); } });
+
+      document.getElementById("downloadData").addEventListener("click", () => {
+        const format = prompt("Enter the format to download (csv, txt, json):", "csv");
+        if (format) downloadData(format.toLowerCase());
+      });
+
+      function downloadData(format) {
+        let dataStr = "";
+        const selectedKpis = $("#kpiSelect").val();
+        const headers = ["Country", "Year"].concat(selectedKpis.map(kpiId => {
+          const obj = kpis.find(item => item.id === kpiId);
+          return obj ? obj.name : kpiId;
+        }));
+        if (format === "csv") {
+          dataStr += headers.join(",") + "\n";
+          fullData.forEach(row => {
+            let rowArr = [row.country, row.year];
+            selectedKpis.forEach(kpi => { rowArr.push(row[kpi] !== "" ? row[kpi] : ""); });
+            dataStr += rowArr.join(",") + "\n";
+          });
+        } else if (format === "txt") {
+          dataStr += headers.join("\t") + "\n";
+          fullData.forEach(row => {
+            let rowArr = [row.country, row.year];
+            selectedKpis.forEach(kpi => { rowArr.push(row[kpi] !== "" ? row[kpi] : ""); });
+            dataStr += rowArr.join("\t") + "\n";
+          });
+        } else if (format === "json") {
+          dataStr = JSON.stringify(fullData, null, 2);
+        } else {
+          alert("Unsupported format. Please choose csv, txt, or json.");
+          return;
+        }
+        const blob = new Blob([dataStr], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `data.${format}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      // --- Updated Presentation Creation ---
+      document.getElementById("createPresentation").addEventListener("click", createPresentation);
+
+      async function createPresentation() {
+        if (fullData.length === 0) {
+          alert("No data available. Please load data first.");
+          return;
+        }
+        const selectedKpis = $("#kpiSelect").val();
+        if (!selectedKpis || selectedKpis.length === 0) {
+          alert("Please select at least one KPI.");
+          return;
+        }
+        const selectedCountries = $("#countrySelect").val();
+        if (typeof PptxGenJS === "undefined") {
+          alert("PptxGenJS library failed to load.");
+          return;
+        }
+        let pres = new PptxGenJS();
+        for (let kpi of selectedKpis) {
+          let kpiObj = kpis.find(item => item.id === kpi) || { name: kpi };
+          let yearsSet = new Set();
+          fullData.forEach(row => { if (row[kpi] !== "") yearsSet.add(row.year); });
+          let years = Array.from(yearsSet).sort((a, b) => a - b);
+          let datasets = [];
+          for (let country of selectedCountries) {
+            let countryData = fullData.filter(row => row.country === country && row[kpi] !== "");
+            let dataMap = {};
+            countryData.forEach(row => { dataMap[row.year] = row[kpi]; });
+            let dataArr = years.map(yr => dataMap[yr] || null);
+            datasets.push({
+              label: country,
+              data: dataArr,
+              borderColor: getRandomColor(),
+              fill: false
+            });
+          }
+          let canvas = document.createElement('canvas');
+          canvas.width = 800;
+          canvas.height = 600;
+          canvas.style.display = "none";
+          document.body.appendChild(canvas);
+          let ctx = canvas.getContext('2d');
+          let chart = new Chart(ctx, {
+            type: 'line',
+            data: { labels: years, datasets: datasets },
+            options: {
+              responsive: false,
+              plugins: { title: { display: true, text: kpiObj.name } }
+            }
+          });
+          await new Promise(resolve => setTimeout(resolve, 500));
+          let chartDataURL = canvas.toDataURL('image/png');
+          document.body.removeChild(canvas);
+          let promptText = `Provide a concise description for a chart showing the trend of ${kpiObj.name} across selected countries from ${years[0]} to ${years[years.length - 1]}.`;
+          let generatedDescription = await generateDescription(promptText);
+          let slide = pres.addSlide();
+          slide.addText(kpiObj.name, { x: 0.5, y: 0.3, w: 9, fontSize: 28, bold: true, color: '363636' });
+          slide.addImage({ data: chartDataURL, x: 0.5, y: 1, w: 9, h: 5 });
+          slide.addText(generatedDescription, { x: 0.5, y: 6.2, w: 9, fontSize: 16, color: '363636', align: pres.AlignH.center });
+        }
+        pres.writeFile({ fileName: "presentation.pptx" });
+      }
+
+      function getRandomColor() {
+        let letters = '0123456789ABCDEF', color = '#';
+        for (let i = 0; i < 6; i++) { color += letters[Math.floor(Math.random() * 16)]; }
+        return color;
+      }
+    });
+  </script>
+
+  <!-- Vue Treeselect Instance for Country Selection -->
+  <script>
+    Vue.component('treeselect', VueTreeselect.Treeselect);
+    new Vue({
+      el: '#vueCountrySelectContainer',
+      data: {
+        selectedCountries: [],
+        countryOptions: []
+      },
+      watch: {
+        selectedCountries(newVal) {
+          window.selectedCountries = newVal;
+          updateAllCharts();
+          saveState();
+        }
+      },
+      created() {
+        fetch("{{ url_for('static', filename='countries.json') }}")
+        .then(response => response.json())
+          .then(countries => {
+            window.countriesInfo = countries;
+            const regionsMap = {};
+            countries.forEach(country => {
+              let region = country.region.value.trim() || "Other";
+              if (!regionsMap[region]) {
+                regionsMap[region] = [];
+              }
+              regionsMap[region].push({
+                id: country.id,
+                label: country.name
+              });
+            });
+            this.countryOptions = Object.keys(regionsMap).map(region => ({
+              id: region,
+              label: region,
+              children: regionsMap[region]
+            }));
+            this.selectedCountries = [];
+            window.selectedCountries = this.selectedCountries;
+          })
+          .catch(error => {
+            console.error("Error loading countries.json:", error);
+          });
+      }
+    });
+  </script>
+
+  <!-- Load countries.json and assign to global variable -->
+  <script>
+fetch("{{ url_for('static', filename='countries.json') }}")
+.then(response => response.json())
+      .then(data => {
+        window.countriesInfo = data;
+      })
+      .catch(error => { console.error("Error loading countries.json:", error); });
+  </script>
+</body>
+</html>
