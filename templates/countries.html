@@ -198,6 +198,12 @@
             transition: background-color 0.2s ease;
         }
 
+        .sidebar .main-nav ul li.active a {
+            background-color: #444;
+            /* example background */
+            font-weight: bold;
+        }
+
         .sidebar .main-nav ul li a:hover {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 4px;
@@ -415,6 +421,10 @@
             background: rgba(255, 255, 255, 0.1);
         }
 
+        .noUi-connect {
+            background: rgba(50, 50, 50, 0.9);
+        }
+
         /* ---------- Responsive adjustments ---------- */
         @media (max-width: 768px) {
             .charts-grid {
@@ -443,17 +453,19 @@
 </head>
 
 <body>
-    <!-- Navigation Sidebar -->
+    <!-- Sidebar Navigation -->
     <div class="sidebar" id="sidebar">
         <span class="close-sidebar" id="closeSidebar">&times;</span>
         <nav class="main-nav">
             <ul>
-                <li><a href="{{ url_for('overview') }}">Overview</a></li>
+                <li ><a href="{{ url_for('overview') }}">Overview</a></li>
+                <li class="active"><a href="{{ url_for('countries') }}">Country Deep Dive</a></li>
                 <li><a href="{{ url_for('comparative') }}">Comparative View</a></li>
-                <li><a href="{{ url_for('data') }}"><Data></Data></a></li>
+                <li><a href="{{ url_for('data') }}">Data</a></li>
             </ul>
         </nav>
     </div>
+
     <!-- Overlay for Sidebar -->
     <div class="overlay" id="overlay"></div>
     <!-- Global Blur Overlay -->

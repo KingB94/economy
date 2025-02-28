@@ -44,7 +44,7 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 60px;
+            height: 80px;
             background: linear-gradient(135deg, #1f1f1f, #323232);
             color: #e0e0e0;
             display: flex;
@@ -105,6 +105,13 @@
             color: #e0e0e0;
             font-weight: 500;
             display: block;
+        }
+
+        .sidebar .main-nav ul li.active a {
+            background-color: #444;
+            /* Background color for the active item */
+            font-weight: bold;
+            color: #e0e0e0;
         }
 
         .sidebar .main-nav ul li a:hover {
@@ -246,6 +253,10 @@
             margin-top: 10px;
         }
 
+        .noUi-connect {
+            background: rgba(50, 50, 50, 0.9);
+        }
+
         /* Override Vue Treeselect text color to black for the input, placeholders, etc. */
         .vue-treeselect__control,
         .vue-treeselect__single-value,
@@ -298,16 +309,20 @@
 
         /* ---------- Modal Popup Styles ---------- */
         .modal {
-            display: none; /* Hidden by default */
+            display: none;
+            /* Hidden by default */
             position: fixed;
-            z-index: 1300; /* higher than sidebar (1200) */
+            z-index: 1300;
+            /* higher than sidebar (1200) */
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0, 0, 0, 0.6); /* Black with opacity */
+            background-color: rgba(0, 0, 0, 0.6);
+            /* Black with opacity */
         }
+
         .modal-content {
             background-color: #fff;
             margin: 10% auto;
@@ -319,15 +334,18 @@
             text-align: center;
             font-family: 'Roboto', sans-serif;
         }
+
         .modal-content h2 {
             margin-top: 0;
             color: #333;
         }
+
         .modal-content p {
             color: #555;
             font-size: 0.95em;
             margin: 20px 0;
         }
+
         .modal-content button {
             background-color: #007bff;
             color: #fff;
@@ -338,9 +356,11 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
+
         .modal-content button:hover {
             background-color: #0056b3;
         }
+
         .close-modal {
             float: right;
             font-size: 24px;
@@ -348,6 +368,7 @@
             color: #aaa;
             cursor: pointer;
         }
+
         .close-modal:hover {
             color: #000;
         }
@@ -368,7 +389,9 @@
         <nav class="main-nav">
             <ul>
                 <li><a href="{{ url_for('overview') }}">Overview</a></li>
+                <li><a href="{{ url_for('countries') }}">Country Deep Dive</a></li>
                 <li><a href="{{ url_for('comparative') }}">Comparative View</a></li>
+                <li class="active"><a href="{{ url_for('data') }}">Data</a></li>
             </ul>
         </nav>
     </div>
@@ -421,9 +444,10 @@
                 <button id="downloadData">Download Data</button>
                 <button id="createPresentation">Create Presentation</button>
                 <!-- Replace the current button -->
-                <button id="createPresentationPro" style="color:orange; background: none; border: none; cursor: pointer; height:30px">
+                <button id="createPresentationPro"
+                    style="color:orange; background: none; border: none; cursor: pointer; height:30px">
                     <i class="fa-solid fa-file-powerpoint"></i>
-                </button>                
+                </button>
             </div>
         </div>
     </div>
@@ -433,7 +457,8 @@
         <div class="modal-content">
             <span class="close-modal" id="closeModal">&times;</span>
             <h2>Upgrade to Pro</h2>
-            <p>Your current subscription is not sufficient for this feature. Upgrade now to access PowerPoint presentation creation and other premium features.</p>
+            <p>Your current subscription is not sufficient for this feature. Upgrade now to access PowerPoint
+                presentation creation and other premium features.</p>
             <button id="upgradeBtn">Upgrade to Pro</button>
         </div>
     </div>
@@ -744,210 +769,210 @@
             document.getElementById("createPresentation").addEventListener("click", createPresentation);
 
             async function createPresentation() {
-    if (fullData.length === 0) {
-        alert("No data available. Please load data first.");
-        return;
-    }
-    const selectedKpis = $("#kpiSelect").val();
-    if (!selectedKpis || selectedKpis.length === 0) {
-        alert("Please select at least one KPI.");
-        return;
-    }
-    // Use only the first selected KPI for the presentation
-    let kpi = selectedKpis[0];
-    let kpiObj = kpis.find(item => item.id === kpi) || { name: kpi };
+                if (fullData.length === 0) {
+                    alert("No data available. Please load data first.");
+                    return;
+                }
+                const selectedKpis = $("#kpiSelect").val();
+                if (!selectedKpis || selectedKpis.length === 0) {
+                    alert("Please select at least one KPI.");
+                    return;
+                }
+                // Use only the first selected KPI for the presentation
+                let kpi = selectedKpis[0];
+                let kpiObj = kpis.find(item => item.id === kpi) || { name: kpi };
 
-    // Use the Vue-managed country selection stored in window.selectedCountries
-    const selectedCountries = window.selectedCountries;
-    if (typeof PptxGenJS === "undefined") {
-        alert("PptxGenJS library failed to load.");
-        return;
-    }
-    let pres = new PptxGenJS();
+                // Use the Vue-managed country selection stored in window.selectedCountries
+                const selectedCountries = window.selectedCountries;
+                if (typeof PptxGenJS === "undefined") {
+                    alert("PptxGenJS library failed to load.");
+                    return;
+                }
+                let pres = new PptxGenJS();
 
-    // Prepare common data: union of all years and datasets for the selected KPI
-    let yearsSet = new Set();
-    fullData.forEach(row => { if (row[kpi] !== "") yearsSet.add(row.year); });
-    let years = Array.from(yearsSet).sort((a, b) => a - b);
-    let datasets = [];
-    for (let country of selectedCountries) {
-        let countryData = fullData.filter(row => row.country === country && row[kpi] !== "");
-        let dataMap = {};
-        countryData.forEach(row => { dataMap[row.year] = row[kpi]; });
-        let dataArr = years.map(yr => dataMap[yr] || null);
-        datasets.push({
-            label: country,
-            data: dataArr,
-            borderColor: getRandomColor(),
-            backgroundColor: getRandomColor(),
-            fill: false
-        });
-    }
+                // Prepare common data: union of all years and datasets for the selected KPI
+                let yearsSet = new Set();
+                fullData.forEach(row => { if (row[kpi] !== "") yearsSet.add(row.year); });
+                let years = Array.from(yearsSet).sort((a, b) => a - b);
+                let datasets = [];
+                for (let country of selectedCountries) {
+                    let countryData = fullData.filter(row => row.country === country && row[kpi] !== "");
+                    let dataMap = {};
+                    countryData.forEach(row => { dataMap[row.year] = row[kpi]; });
+                    let dataArr = years.map(yr => dataMap[yr] || null);
+                    datasets.push({
+                        label: country,
+                        data: dataArr,
+                        borderColor: getRandomColor(),
+                        backgroundColor: getRandomColor(),
+                        fill: false
+                    });
+                }
 
-    // ---------- Slide 1: Line Chart ----------
-    let canvas1 = document.createElement('canvas');
-    canvas1.width = 800;
-    canvas1.height = 600;
-    canvas1.style.display = "none";
-    document.body.appendChild(canvas1);
-    let ctx1 = canvas1.getContext('2d');
-    let lineChart = new Chart(ctx1, {
-        type: 'line',
-        data: { labels: years, datasets: datasets },
-        options: {
-            responsive: false,
-            plugins: { title: { display: true, text: kpiObj.name + " (Line Chart)" } }
-        }
-    });
-    await new Promise(resolve => setTimeout(resolve, 500));
-    let lineChartDataURL = canvas1.toDataURL('image/png');
-    document.body.removeChild(canvas1);
-    let promptText1 = `Provide a concise description for a line chart showing the trend of ${kpiObj.name} across selected countries from ${years[0]} to ${years[years.length - 1]}.`;
-    let generatedDescription1 = await generateDescription(promptText1);
-    let slide1 = pres.addSlide();
-    slide1.addText(kpiObj.name, {
-        x: 0.5,
-        y: 0.3,
-        w: 9,
-        fontSize: 28,
-        bold: true,
-        color: '363636',
-        align: pres.AlignH.center
-    });
-    slide1.addImage({
-        data: lineChartDataURL,
-        x: 0.5,
-        y: 1,
-        w: 4,
-        h: 3
-    });
-    slide1.addText(generatedDescription1, {
-        x: 5,
-        y: 3,
-        w: 4,
-        fontSize: 16,
-        color: '363636',
-        valign: pres.AlignV.middle,
-        align: pres.AlignH.left
-    });
+                // ---------- Slide 1: Line Chart ----------
+                let canvas1 = document.createElement('canvas');
+                canvas1.width = 800;
+                canvas1.height = 600;
+                canvas1.style.display = "none";
+                document.body.appendChild(canvas1);
+                let ctx1 = canvas1.getContext('2d');
+                let lineChart = new Chart(ctx1, {
+                    type: 'line',
+                    data: { labels: years, datasets: datasets },
+                    options: {
+                        responsive: false,
+                        plugins: { title: { display: true, text: kpiObj.name + " (Line Chart)" } }
+                    }
+                });
+                await new Promise(resolve => setTimeout(resolve, 500));
+                let lineChartDataURL = canvas1.toDataURL('image/png');
+                document.body.removeChild(canvas1);
+                let promptText1 = `Provide a concise description for a line chart showing the trend of ${kpiObj.name} across selected countries from ${years[0]} to ${years[years.length - 1]}.`;
+                let generatedDescription1 = await generateDescription(promptText1);
+                let slide1 = pres.addSlide();
+                slide1.addText(kpiObj.name, {
+                    x: 0.5,
+                    y: 0.3,
+                    w: 9,
+                    fontSize: 28,
+                    bold: true,
+                    color: '363636',
+                    align: pres.AlignH.center
+                });
+                slide1.addImage({
+                    data: lineChartDataURL,
+                    x: 0.5,
+                    y: 1,
+                    w: 4,
+                    h: 3
+                });
+                slide1.addText(generatedDescription1, {
+                    x: 5,
+                    y: 3,
+                    w: 4,
+                    fontSize: 16,
+                    color: '363636',
+                    valign: pres.AlignV.middle,
+                    align: pres.AlignH.left
+                });
 
-    // ---------- Slide 2: Bar Chart ----------
-    let canvas2 = document.createElement('canvas');
-    canvas2.width = 800;
-    canvas2.height = 600;
-    canvas2.style.display = "none";
-    document.body.appendChild(canvas2);
-    let ctx2 = canvas2.getContext('2d');
-    let barChart = new Chart(ctx2, {
-        type: 'bar',
-        data: { labels: years, datasets: datasets },
-        options: {
-            responsive: false,
-            plugins: { title: { display: true, text: kpiObj.name + " (Bar Chart)" } }
-        }
-    });
-    await new Promise(resolve => setTimeout(resolve, 500));
-    let barChartDataURL = canvas2.toDataURL('image/png');
-    document.body.removeChild(canvas2);
-    let promptText2 = `Provide a concise description for a bar chart showing the trend of ${kpiObj.name} across selected countries from ${years[0]} to ${years[years.length - 1]}.`;
-    let generatedDescription2 = await generateDescription(promptText2);
-    let slide2 = pres.addSlide();
-    slide2.addText(kpiObj.name, {
-        x: 0.5,
-        y: 0.3,
-        w: 9,
-        fontSize: 28,
-        bold: true,
-        color: '363636',
-        align: pres.AlignH.center
-    });
-    slide2.addImage({
-        data: barChartDataURL,
-        x: 0.5,
-        y: 1,
-        w: 4,
-        h: 3
-    });
-    slide2.addText(generatedDescription2, {
-        x: 5,
-        y: 3,
-        w: 4,
-        fontSize: 16,
-        color: '363636',
-        valign: pres.AlignV.middle,
-        align: pres.AlignH.left
-    });
+                // ---------- Slide 2: Bar Chart ----------
+                let canvas2 = document.createElement('canvas');
+                canvas2.width = 800;
+                canvas2.height = 600;
+                canvas2.style.display = "none";
+                document.body.appendChild(canvas2);
+                let ctx2 = canvas2.getContext('2d');
+                let barChart = new Chart(ctx2, {
+                    type: 'bar',
+                    data: { labels: years, datasets: datasets },
+                    options: {
+                        responsive: false,
+                        plugins: { title: { display: true, text: kpiObj.name + " (Bar Chart)" } }
+                    }
+                });
+                await new Promise(resolve => setTimeout(resolve, 500));
+                let barChartDataURL = canvas2.toDataURL('image/png');
+                document.body.removeChild(canvas2);
+                let promptText2 = `Provide a concise description for a bar chart showing the trend of ${kpiObj.name} across selected countries from ${years[0]} to ${years[years.length - 1]}.`;
+                let generatedDescription2 = await generateDescription(promptText2);
+                let slide2 = pres.addSlide();
+                slide2.addText(kpiObj.name, {
+                    x: 0.5,
+                    y: 0.3,
+                    w: 9,
+                    fontSize: 28,
+                    bold: true,
+                    color: '363636',
+                    align: pres.AlignH.center
+                });
+                slide2.addImage({
+                    data: barChartDataURL,
+                    x: 0.5,
+                    y: 1,
+                    w: 4,
+                    h: 3
+                });
+                slide2.addText(generatedDescription2, {
+                    x: 5,
+                    y: 3,
+                    w: 4,
+                    fontSize: 16,
+                    color: '363636',
+                    valign: pres.AlignV.middle,
+                    align: pres.AlignH.left
+                });
 
-    // ---------- Slide 3: Doughnut Chart ----------
-    let canvas3 = document.createElement('canvas');
-    canvas3.width = 800;
-    canvas3.height = 600;
-    canvas3.style.display = "none";
-    document.body.appendChild(canvas3);
-    let ctx3 = canvas3.getContext('2d');
-    let doughnutChart = new Chart(ctx3, {
-        type: 'doughnut',
-        data: { labels: years, datasets: datasets },
-        options: {
-            responsive: false,
-            plugins: { title: { display: true, text: kpiObj.name + " (Doughnut Chart)" } }
-        }
-    });
-    await new Promise(resolve => setTimeout(resolve, 500));
-    let doughnutChartDataURL = canvas3.toDataURL('image/png');
-    document.body.removeChild(canvas3);
-    let promptText3 = `Provide a concise description for a doughnut chart showing the trend of ${kpiObj.name} across selected countries from ${years[0]} to ${years[years.length - 1]}.`;
-    let generatedDescription3 = await generateDescription(promptText3);
-    let slide3 = pres.addSlide();
-    slide3.addText(kpiObj.name, {
-        x: 0.5,
-        y: 0.3,
-        w: 9,
-        fontSize: 28,
-        bold: true,
-        color: '363636',
-        align: pres.AlignH.center
-    });
-    slide3.addImage({
-        data: doughnutChartDataURL,
-        x: 0.5,
-        y: 1,
-        w: 4,
-        h: 3
-    });
-    slide3.addText(generatedDescription3, {
-        x: 5,
-        y: 3,
-        w: 4,
-        fontSize: 16,
-        color: '363636',
-        valign: pres.AlignV.middle,
-        align: pres.AlignH.left
-    });
+                // ---------- Slide 3: Doughnut Chart ----------
+                let canvas3 = document.createElement('canvas');
+                canvas3.width = 800;
+                canvas3.height = 600;
+                canvas3.style.display = "none";
+                document.body.appendChild(canvas3);
+                let ctx3 = canvas3.getContext('2d');
+                let doughnutChart = new Chart(ctx3, {
+                    type: 'doughnut',
+                    data: { labels: years, datasets: datasets },
+                    options: {
+                        responsive: false,
+                        plugins: { title: { display: true, text: kpiObj.name + " (Doughnut Chart)" } }
+                    }
+                });
+                await new Promise(resolve => setTimeout(resolve, 500));
+                let doughnutChartDataURL = canvas3.toDataURL('image/png');
+                document.body.removeChild(canvas3);
+                let promptText3 = `Provide a concise description for a doughnut chart showing the trend of ${kpiObj.name} across selected countries from ${years[0]} to ${years[years.length - 1]}.`;
+                let generatedDescription3 = await generateDescription(promptText3);
+                let slide3 = pres.addSlide();
+                slide3.addText(kpiObj.name, {
+                    x: 0.5,
+                    y: 0.3,
+                    w: 9,
+                    fontSize: 28,
+                    bold: true,
+                    color: '363636',
+                    align: pres.AlignH.center
+                });
+                slide3.addImage({
+                    data: doughnutChartDataURL,
+                    x: 0.5,
+                    y: 1,
+                    w: 4,
+                    h: 3
+                });
+                slide3.addText(generatedDescription3, {
+                    x: 5,
+                    y: 3,
+                    w: 4,
+                    fontSize: 16,
+                    color: '363636',
+                    valign: pres.AlignV.middle,
+                    align: pres.AlignH.left
+                });
 
-    // ---------- Slide 4: Conclusion Slide ----------
-    let conclusionText = "Based on the data trends, key insights have been identified. Further analysis and context are needed for actionable conclusions.";
-    let slide4 = pres.addSlide();
-    slide4.addText("Conclusion", {
-        x: 0.5,
-        y: 0.3,
-        w: 9,
-        fontSize: 28,
-        bold: true,
-        color: '363636',
-        align: pres.AlignH.center
-    });
-    slide4.addText(conclusionText, {
-        x: 0.5,
-        y: 2,
-        w: 9,
-        fontSize: 18,
-        color: '363636',
-        align: pres.AlignH.center
-    });
+                // ---------- Slide 4: Conclusion Slide ----------
+                let conclusionText = "Based on the data trends, key insights have been identified. Further analysis and context are needed for actionable conclusions.";
+                let slide4 = pres.addSlide();
+                slide4.addText("Conclusion", {
+                    x: 0.5,
+                    y: 0.3,
+                    w: 9,
+                    fontSize: 28,
+                    bold: true,
+                    color: '363636',
+                    align: pres.AlignH.center
+                });
+                slide4.addText(conclusionText, {
+                    x: 0.5,
+                    y: 2,
+                    w: 9,
+                    fontSize: 18,
+                    color: '363636',
+                    align: pres.AlignH.center
+                });
 
-    pres.writeFile({ fileName: "presentation.pptx" });
-}
+                pres.writeFile({ fileName: "presentation.pptx" });
+            }
 
 
             function getRandomColor() {
