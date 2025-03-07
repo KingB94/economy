@@ -2,1219 +2,1516 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>GDP History Dashboard</title>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GDP History Dashboard</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet" />
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <!-- jQuery (required for noUiSlider, Chart.js, D3, etc.) -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- noUiSlider CSS and JS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.css" rel="stylesheet" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.js"></script>
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- D3.js -->
-    <script src="https://d3js.org/d3.v6.min.js"></script>
+  <!-- jQuery (required for noUiSlider, Chart.js, D3, etc.) -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- noUiSlider CSS and JS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.js"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- D3.js -->
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+  <!-- Include html2canvas from a CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <!-- Vue 2.x -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+  <!-- vue-treeselect & its styles -->
+  <script src="https://cdn.jsdelivr.net/npm/@riophae/vue-treeselect@0.4.0/dist/vue-treeselect.umd.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@riophae/vue-treeselect@0.4.0/dist/vue-treeselect.min.css">
 
-    <!-- Vue 2.x -->
-    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
-    <!-- vue-treeselect & its styles -->
-    <script src="https://cdn.jsdelivr.net/npm/@riophae/vue-treeselect@0.4.0/dist/vue-treeselect.umd.min.js"></script>
-    <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/@riophae/vue-treeselect@0.4.0/dist/vue-treeselect.min.css">
+  <!-- PptxGenJS for Presentation Creation -->
+  <script defer src="https://unpkg.com/pptxgenjs/dist/pptxgen.bundle.js"></script>
 
-    <style>
-        /* ---------- Global Reset & Base Styles ---------- */
-        * {
-            box-sizing: border-box;
-        }
+  <style>
+    /* ---------- Global Reset & Base Styles ---------- */
+    * {
+      box-sizing: border-box;
+    }
 
-        body {
-            margin: 0;
-            font-family: 'Montserrat', sans-serif;
-            background: #121212;
-            color: #e0e0e0;
-            /* Remove top padding since header now includes filters */
-            padding-top: 0;
-        }
+    body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      background: #121212;
+      color: #e0e0e0;
+      padding-top: 0;
+    }
 
-        /* ---------- Integrated Header ---------- */
-        .header {
-            position: fixed;
-            height: 80px;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1100;
-            background: linear-gradient(135deg, #1f1f1f, #323232);
-            padding: 10px 20px;
-            display: flex;
-            align-items: center;
-            flex-wrap: nowrap;
-            font-family: 'Roboto', sans-serif;
-        }
+    /* ---------- Integrated Header ---------- */
+    .header {
+      position: fixed;
+      height: 80px;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1100;
+      background: linear-gradient(135deg, #1f1f1f, #323232);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      flex-wrap: nowrap;
+      font-family: 'Roboto', sans-serif;
+    }
 
-        .header-item {
-            padding: 0 10px;
-        }
+    .header-item {
+      padding: 0 10px;
+    }
 
-        .header-menu,
-        .header-account {
-            flex: 0.5;
-        }
+    .header-menu,
+    .header-account {
+      flex: 0.5;
+    }
 
-        .header-headline {
-            flex: 1;
-            text-align: center;
-        }
+    .header-headline {
+      flex: 1;
+      text-align: center;
+    }
 
-        .header-yearslider {
-            flex: 3;
-            text-align: center;
-        }
+    .header-yearslider {
+      flex: 3;
+      text-align: center;
+    }
 
-        .header-countryfilter {
-            flex: 1;
-            text-align: center;
-        }
+    .header-countryfilter {
+      flex: 1;
+      text-align: center;
+    }
 
-        .burger-icon,
-        .account-icon {
-            font-size: 24px;
-            cursor: pointer;
-            color: #e0e0e0;
-        }
+    .burger-icon,
+    .account-icon {
+      font-size: 24px;
+      cursor: pointer;
+      color: #e0e0e0;
+    }
 
-        header h1 {
-            margin: 0;
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
+    header h1 {
+      margin: 0;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
 
-        .filter-label {
-            font-weight: 500;
-            font-size: 14px;
-            margin-bottom: 4px;
-            display: block;
-            color: #e0e0e0;
-        }
+    .filter-label {
+      font-weight: 500;
+      font-size: 14px;
+      margin-bottom: 4px;
+      display: block;
+      color: #e0e0e0;
+    }
 
-        /* ---------- Navigation Sidebar ---------- */
-        .sidebar {
-            height: 100%;
-            width: 250px;
-            position: fixed;
-            top: 0;
-            left: -250px;
-            background-color: #1f1f1f;
-            overflow-x: hidden;
-            transition: left 0.3s ease;
-            z-index: 1200;
-            padding-top: 60px;
-            color: #e0e0e0;
-            font-family: 'Roboto', sans-serif;
-        }
+    /* New Mobile Header Styles */
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        height: auto;
+        padding: 10px;
+        text-align: center;
+      }
 
-        .sidebar.active {
-            left: 0;
-        }
+      .header-item {
+        padding: 5px 0;
+        width: 100%;
+      }
 
-        .sidebar .close-sidebar {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 24px;
-            cursor: pointer;
-            color: #e0e0e0;
-        }
+      .header-menu {
+        order: 1;
+      }
 
-        .sidebar .main-nav ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
+      .header-headline {
+        order: 2;
+        font-size: 18px;
+      }
 
-        .sidebar .main-nav ul li {
-            padding: 15px 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
+      .header-yearslider {
+        order: 3;
+      }
 
-        .sidebar .main-nav ul li a {
-            text-decoration: none;
-            color: #e0e0e0;
-            font-weight: 500;
-            display: block;
-        }
+      .header-countryfilter {
+        order: 4;
+      }
 
-        .sidebar .main-nav ul li.active a {
-            background-color: #444;
-            /* Background color for the active item */
-            font-weight: bold;
-            color: #e0e0e0;
-        }
+      .header-account {
+        display: none;
+      }
 
-        .sidebar .main-nav ul li a:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-        }
+      .dashboard-container {
+        margin: 200px auto 20px auto !important;
+      }
+    }
 
-        /* ---------- Overlay for Sidebar ---------- */
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 1150;
-            display: none;
-        }
+    /* ---------- Navigation Sidebar ---------- */
+    .sidebar {
+      height: 100%;
+      width: 250px;
+      position: fixed;
+      top: 0;
+      left: -250px;
+      background-color: #1f1f1f;
+      overflow-x: hidden;
+      transition: left 0.3s ease;
+      z-index: 1200;
+      padding-top: 60px;
+      color: #e0e0e0;
+      font-family: 'Roboto', sans-serif;
+    }
 
-        .overlay.active {
-            display: block;
-        }
+    .sidebar.active {
+      left: 0;
+    }
 
-        /* ---------- Global Blur Overlay (for expanded charts) ---------- */
-        .global-blur-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(5px);
-            z-index: 1500;
-            display: none;
-        }
+    .sidebar .close-sidebar {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 24px;
+      cursor: pointer;
+      color: #e0e0e0;
+    }
 
-        .global-blur-overlay.active {
-            display: block;
-        }
+    .sidebar .main-nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
 
-        /* ---------- Dashboard Container ---------- */
-        .dashboard-container {
-            width: 100%;
-            margin: 80px auto 20px auto;
-            padding: 20px;
-        }
+    .sidebar .main-nav ul li {
+      padding: 15px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
 
-        /* ---------- Filter Section Above Grid ---------- */
-        .filter-section {
-            background: #1f1f1f;
-            padding: 10px 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-            margin-bottom: 15px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-        }
+    .sidebar .main-nav ul li a {
+      text-decoration: none;
+      color: #e0e0e0;
+      font-weight: 500;
+      display: block;
+    }
 
-        .filter-item {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            min-width: 200px;
-        }
+    .sidebar .main-nav ul li.active a {
+      background-color: #444;
+      font-weight: bold;
+      color: #e0e0e0;
+    }
 
-        .filter-label {
-            font-weight: 600;
-            margin-bottom: 4px;
-            color: #e0e0e0;
-            font-size: 0.9em;
-        }
+    .sidebar .main-nav ul li a:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
 
-        #yearRangeDisplay {
-            margin-top: 4px;
-            font-size: 0.85em;
-            color: #e0e0e0;
-        }
+    /* ---------- Overlay for Sidebar ---------- */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(252, 249, 249, 0.6);
+      z-index: 1150;
+      display: none;
+    }
 
-        /* ---------- Chart Grids Container ---------- */
-        #chartGridsContainer {
-            display: flex;
-            flex-direction: column;
-            gap: 40px;
-            padding: 0 20px;
-        }
+    .overlay.active {
+      display: block;
+    }
 
-        /* ---------- Charts Grid ---------- */
-        .charts-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            width: 100%;
-            padding: 20px;
-            background: #1e1e1e;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
-            position: relative;
-        }
+    /* ---------- Dashboard Container ---------- */
+    .dashboard-container {
+      width: 100%;
+      margin: 80px auto 20px auto;
+      padding: 20px;
+    }
 
-        .quadrant-chart {
-            grid-column: 1 / 2;
-            position: relative;
-        }
+    /* ---------- Chart Grids Container ---------- */
+    #chartGridsContainer {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      padding: 0 20px;
+      overflow-x: auto;
+    }
 
-        .line-charts {
-            grid-column: 2 / 3;
-            display: grid;
-            grid-template-rows: 1fr 1fr;
-            gap: 20px;
-            height: 500px;
-        }
+    /* ---------- Charts Grid ---------- */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      padding: 20px;
+      margin-bottom: 10px;
+      background: #1e1e1e;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
+      position: relative;
+    }
 
-        /* ---------- Quadrant Chart ---------- */
-        #quadrantLeftContainer1,
-        [id^="quadrantLeftContainer"] {
-            background: #2c2c2c;
-            padding: 10px;
-            border-radius: 6px;
-            box-sizing: border-box;
-            position: relative;
-        }
+    @media (max-width: 768px) {
+      .charts-grid {
+        grid-template-columns: 1fr;
+      }
+    }
 
-        #quadrantDropdownContainer1,
-        [id^="quadrantDropdownContainer"] {
-            margin-bottom: 10px;
-        }
+    /* ---------- Quadrant Chart ---------- */
+    #quadrantLeftContainer1,
+    [id^="quadrantLeftContainer"] {
+      background: #2c2c2c;
+      padding: 10px;
+      border-radius: 6px;
+      box-sizing: border-box;
+      position: relative;
+    }
 
-        /* ---------- Line Chart Wrapper ---------- */
-        .line-chart-wrapper {
-            position: relative;
-            background: #2c2c2c;
-            padding: 10px 10px 30px 10px;
-            border-radius: 6px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-            height: 330px;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-        }
+    #quadrantDropdownContainer1,
+    [id^="quadrantDropdownContainer"] {
+      margin-bottom: 10px;
+    }
 
-        .chart-canvas {
-            width: 100%;
-            height: 100%;
-        }
+    /* ---------- Line Chart Wrapper ---------- */
+    .line-chart-wrapper {
+      position: relative;
+      background: #2c2c2c;
+      padding: 10px 10px 30px 10px;
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+      height: 330px;
+      box-sizing: border-box;
+      transition: all 0.3s ease;
+    }
 
-        .indicatorSelect {
-            font-size: 1em;
-            padding: 5px 8px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-            background: #1f1f1f;
-            color: #e0e0e0;
-            border: 1px solid #3d3d3d;
-        }
+    .line-charts {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
 
-        /* ---------- Add Chart Button Styling ---------- */
-        #addChartBtn {
-            background: #1f1f1f;
-            color: #e0e0e0;
-            border: none;
-            padding: 10px 20px;
-            margin: 20px auto;
-            display: block;
-            border-radius: 5px;
-            font-family: 'Roboto', sans-serif;
-            font-size: 16px;
-            cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
-            transition: background 0.3s ease, transform 0.2s ease;
-        }
+    .chart-canvas {
+      width: 100%;
+      height: 100%;
+    }
 
-        #addChartBtn:hover {
-            background: #323232;
-            transform: scale(1.05);
-        }
+    .indicatorSelect {
+      font-size: 1em;
+      padding: 5px 8px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      background: #1f1f1f;
+      color: #e0e0e0;
+      border: 1px solid #3d3d3d;
+    }
 
-        /* ---------- Expand Button Styling ---------- */
-        .expand-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.5);
-            border: none;
-            color: #e0e0e0;
-            border-radius: 3px;
-            padding: 4px 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background 0.2s ease;
-            z-index: 10;
-        }
+    /* ---------- Add Chart Button Styling ---------- */
+    #addChartBtn {
+      background: #1f1f1f;
+      color: #e0e0e0;
+      border: none;
+      padding: 10px 20px;
+      margin: 20px auto;
+      display: block;
+      border-radius: 5px;
+      font-family: 'Roboto', sans-serif;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
 
-        .expand-btn:hover {
-            background: rgba(0, 0, 0, 0.7);
-        }
+    #addChartBtn:hover {
+      background: #323232;
+      transform: scale(1.05);
+    }
 
-        /* When expanded, the container uses fixed positioning */
-        .line-chart-wrapper.expanded,
-        .quadrant-chart.expanded {
-            position: fixed;
-            top: 10%;
-            left: 10%;
-            width: 80%;
-            height: 80%;
-            z-index: 9999;
-            background: #1e1e1e;
-            padding: 20px;
-            overflow: auto;
-        }
+    /* ---------- Create Presentation Button Styling ---------- */
+    #createPresentation {
+      background: #0056b3;
+      color: #e0e0e0;
+      border: none;
+      padding: 10px 20px;
+      margin: 20px auto;
+      display: block;
+      border-radius: 5px;
+      font-family: 'Roboto', sans-serif;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
 
-        .line-chart-wrapper.expanded .chart-canvas,
-        .quadrant-chart.expanded .quadrant-chart-container {
-            width: 100% !important;
-            height: 100% !important;
-        }
+    #createPresentation:hover {
+      background: #007bff;
+      transform: scale(1.05);
+    }
 
-        /* ---------- Global Modal (if needed for bar charts) ---------- */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1300;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.8);
-        }
+    /* ---------- Expand Button Styling ---------- */
+    .expand-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.5);
+      border: none;
+      color: #e0e0e0;
+      border-radius: 3px;
+      padding: 4px 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s ease;
+      z-index: 10;
+    }
 
-        .modal-content {
-            background: #1e1e1e;
-            margin: 5% auto;
-            padding: 20px;
-            border-radius: 8px;
-            width: 80%;
-            position: relative;
-        }
+    .expand-btn:hover {
+      background: rgba(0, 0, 0, 0.7);
+    }
 
-        .close-modal {
-            position: absolute;
-            top: 10px;
-            right: 20px;
-            font-size: 28px;
-            color: #e0e0e0;
-            cursor: pointer;
-        }
+    /* ---------- Global Modal for Expanded Charts ---------- */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1300;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
 
-        @media (max-width: 768px) {
-            .charts-grid {
-                grid-template-columns: 1fr;
-            }
+    .modal-content {
+      background: #1e1e1e;
+      margin: 5% auto;
+      padding: 20px;
+      border-radius: 8px;
+      width: 80%;
+      height: 80%;
+      position: relative;
+    }
 
-            .line-charts {
-                height: auto;
-                grid-template-rows: auto;
-            }
-        }
+    .modal-content canvas {
+      width: 80%;
+      height: 80%;
+    }
 
-        .noUi-connect {
-            background: rgba(50, 50, 50, 0.9);
-        }
+    .modal-content svg {
+      width: 80%;
+      height: 80%;
+      display: block;
+      margin: 0 auto;
+    }
 
-        /* Spinner Overlay Styles */
-        .spinner-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-        }
+    .close-modal {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      font-size: 28px;
+      color: #e0e0e0;
+      cursor: pointer;
+    }
 
-        /* Spinner Animation Styles */
-        .spinner {
-            border: 8px solid #f3f3f3;
-            border-top: 8px solid #3498db;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 1s linear infinite;
-        }
+    /* ---------- Spinner Overlay Styles ---------- */
+    .spinner-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
 
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
+    .spinner {
+      border: 8px solid #f3f3f3;
+      border-top: 8px solid #3498db;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+    }
 
-            100% {
-                transform: rotate(360deg);
-            }
-        }
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
 
-        /* Override Vue Treeselect text color */
-        .vue-treeselect__control,
-        .vue-treeselect__single-value,
-        .vue-treeselect__placeholder,
-        .vue-treeselect__multi-value-item,
-        .vue-treeselect__option,
-        .vue-treeselect__label {
-            color: black !important;
-        }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
 
-        .vue-treeselect__value-remove {
-            color: black !important;
-        }
+    /* Override Vue Treeselect text color */
+    .vue-treeselect__control,
+    .vue-treeselect__single-value,
+    .vue-treeselect__placeholder,
+    .vue-treeselect__multi-value-item,
+    .vue-treeselect__option,
+    .vue-treeselect__label {
+      color: black !important;
+    }
 
-        /* Fix Treeselect height and wrapping */
-        .vue-treeselect__control {
-            height: 36px !important;
-            width: 300px !important;
-            max-height: 36px !important;
-            overflow: hidden !important;
-        }
+    .vue-treeselect__value-remove {
+      color: black !important;
+    }
 
-        .vue-treeselect__multi-value-wrapper {
-            display: inline-flex !important;
-            flex-wrap: nowrap !important;
-            overflow-x: auto !important;
-            overflow-y: hidden !important;
-            white-space: nowrap !important;
-            align-items: center !important;
-            max-height: 36px !important;
-        }
+    .vue-treeselect__control {
+      height: 36px !important;
+      width: 300px !important;
+      max-height: 36px !important;
+      overflow: hidden !important;
+    }
 
-        .vue-treeselect__multi-value-item {
-            white-space: nowrap !important;
-            flex: 0 0 auto !important;
-        }
+    .vue-treeselect__multi-value-wrapper {
+      display: inline-flex !important;
+      flex-wrap: nowrap !important;
+      overflow-x: auto !important;
+      overflow-y: hidden !important;
+      white-space: nowrap !important;
+      align-items: center !important;
+      max-height: 36px !important;
+    }
 
-        .vue-treeselect--searchable:not(.vue-treeselect--disabled) .vue-treeselect__value-container {
-            cursor: text;
-            max-height: 50px;
-            overflow-y: auto;
-        }
+    .vue-treeselect__multi-value-item {
+      white-space: nowrap !important;
+      flex: 0 0 auto !important;
+    }
 
-        .vue-treeselect--has-value .vue-treeselect__multi-value {
-            margin-bottom: 5px;
-            height: 25px;
-        }
-    </style>
+    .vue-treeselect--searchable:not(.vue-treeselect--disabled) .vue-treeselect__value-container {
+      cursor: text;
+      max-height: 50px;
+      overflow-y: auto;
+    }
+
+    .vue-treeselect--has-value .vue-treeselect__multi-value {
+      margin-bottom: 5px;
+      height: 25px;
+    }
+  </style>
 </head>
 
 <body>
-    <!-- Sidebar Navigation -->
-    <div class="sidebar" id="sidebar">
-        <span class="close-sidebar" id="closeSidebar">&times;</span>
-        <nav class="main-nav">
-            <ul>
-                <li><a href="{{ url_for('overview') }}">Overview</a></li>
-                <li><a href="{{ url_for('countries') }}">Country Deep Dive</a></li>
-                <li class="active"><a href="{{ url_for('comparative') }}">Comparative View</a></li>
-                <li><a href="{{ url_for('data') }}">Data</a></li>
-            </ul>
-        </nav>
+  <!-- Sidebar Navigation -->
+  <div class="sidebar" id="sidebar">
+    <span class="close-sidebar" id="closeSidebar">&times;</span>
+    <nav class="main-nav">
+      <ul>
+        <li><a href="{{ url_for('overview') }}">Overview</a></li>
+        <li><a href="{{ url_for('countries') }}">Country Deep Dive</a></li>
+        <li class="active"><a href="{{ url_for('comparative') }}">Comparative View</a></li>
+        <li><a href="{{ url_for('data') }}">Data</a></li>
+      </ul>
+    </nav>
+  </div>
+  <!-- Overlay for Sidebar -->
+  <div class="overlay" id="overlay"></div>
+  <!-- Integrated Header -->
+  <header class="header">
+    <!-- Burger Menu Icon (Left) -->
+    <div class="header-item header-menu" style="text-align: left;">
+      <i id="burgerIcon" class="burger-icon fas fa-bars"></i>
     </div>
-
-    <!-- Overlay for Sidebar -->
-    <div class="overlay" id="overlay"></div>
-    <!-- Global Blur Overlay for expanded charts -->
-    <div id="globalBlurOverlay" class="global-blur-overlay"></div>
-
-    <!-- Integrated Header -->
-    <header class="header">
-        <!-- Burger Menu Icon (Left) -->
-        <div class="header-item header-menu" style="text-align: left;">
-            <i id="burgerIcon" class="burger-icon fas fa-bars"></i>
-        </div>
-        <!-- Headline -->
-        <div class="header-item header-headline" style="text-align: center; font-size: 12px;">
-            <h1>SIQ Company Economy</h1>
-        </div>
-        <!-- Year Slider -->
-        <div class="header-item header-yearslider" style="text-align: center;">
-            <label for="yearSlider" class="filter-label">Select Year Range:</label>
-            <div id="yearSlider"></div>
-            <span id="yearRangeDisplay">Selected Years: 2010 - 2021</span>
-        </div>
-        <!-- Country Filter -->
-        <div class="header-item header-countryfilter" id="vueCountrySelectContainer" style="text-align: center;">
-            <label class="filter-label">Select Countries:</label>
-            <treeselect v-model="value" :multiple="true" :options="options" placeholder="Select countries" />
-        </div>
-        <!-- Account Icon (Right) -->
-        <div class="header-item header-account" style="text-align: right;">
-            <i id="accountIcon" class="account-icon fas fa-user"></i>
-        </div>
-    </header>
-
-    <!-- Dashboard Container -->
-    <div class="dashboard-container">
-        <!-- Container for Multiple Chart Grids -->
-        <div id="chartGridsContainer">
-            <!-- Initial Chart Grid (Grid 1) -->
-            <div class="charts-grid" id="grid1">
-                <!-- Left Column: Quadrant Chart -->
-                <div class="quadrant-chart" data-chart-type="quadrant">
-                    <div id="quadrantLeftContainer1" style="position: relative;">
-                        <!-- Expand button for quadrant chart -->
-                        <button class="expand-btn" title="Expand Chart">⛶</button>
-                        <div id="quadrantDropdownContainer1">
-                            <div>
-                                <label for="xIndicatorSelect1">X-Axis Indicator:</label>
-                                <select id="xIndicatorSelect1"></select>
-                            </div>
-                            <div>
-                                <label for="yIndicatorSelect1">Y-Axis Indicator:</label>
-                                <select id="yIndicatorSelect1"></select>
-                            </div>
-                        </div>
-                        <div id="quadrantChartContainer1" style="height:600px;"></div>
-                    </div>
-                    <div id="quadrantControlContainer1">
-                        <button id="quadrantPlayButton1">&#9658;</button>
-                        <div id="quadrantYearScale1">
-                            <div id="yearMarker1">-</div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Right Column: Line Charts -->
-                <div class="line-charts" id="chartsContainer1">
-                    <!-- Line charts will be dynamically added here -->
-                </div>
-            </div>
-        </div>
-        <!-- Add Chart Grid Button -->
-        <button id="addChartBtn">Add Chart Grid</button>
+    <!-- Headline -->
+    <div class="header-item header-headline" style="text-align: center; font-size: 12px;">
+      <h1>SIQ Company Economy</h1>
     </div>
-
-    <!-- (Optional) Modal for expanded bar charts if needed -->
-    <div id="chartModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <!-- Expanded chart element will be appended here -->
-        </div>
+    <!-- Year Slider -->
+    <div class="header-item header-yearslider" style="text-align: center;">
+      <label for="yearSlider" class="filter-label">Select Year Range:</label>
+      <div id="yearSlider"></div>
+      <span id="yearRangeDisplay">Selected Years: 2010 - 2021</span>
     </div>
-
-    <!-- Tooltip element -->
-    <div id="tooltip"></div>
-
-    <!-- Loading Spinner Overlay -->
-    <div id="spinnerOverlay" class="spinner-overlay" style="display: none;">
-        <div class="spinner"></div>
+    <!-- Country Filter -->
+    <div class="header-item header-countryfilter" id="vueCountrySelectContainer" style="text-align: center;">
+      <label class="filter-label">Select Countries:</label>
+      <treeselect v-model="value" :multiple="true" :options="options" placeholder="Select countries" />
     </div>
+    <!-- Account Icon (Right) -->
+    <div class="header-item header-account" style="text-align: right;">
+      <i id="accountIcon" class="account-icon fas fa-user"></i>
+    </div>
+  </header>
 
-    <!-- Sidebar Toggle Script -->
-    <script>
-        const burgerIcon = document.getElementById('burgerIcon');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
-        const closeSidebar = document.getElementById('closeSidebar');
-
-        burgerIcon.addEventListener('click', () => {
-            sidebar.classList.add('active');
-            overlay.classList.add('active');
-        });
-        closeSidebar.addEventListener('click', () => {
-            sidebar.classList.remove('active');
-            overlay.classList.remove('active');
-        });
-        overlay.addEventListener('click', () => {
-            sidebar.classList.remove('active');
-            overlay.classList.remove('active');
-        });
-        const accountIcon = document.getElementById('accountIcon');
-        accountIcon.addEventListener('click', () => {
-            window.location.href = "{{url_for('account')}}";
-        });
-    </script>
-
-    <!-- Dashboard & Charts Script -->
-    <script>
-        let countriesData = [];
-        // Set initial year range – this variable will be updated by the slider.
-        let yearRange = [2010, 2021];
-        const margin = { top: 20, right: 20, bottom: 40, left: 40 };
-        const indicators = [
-            { value: "NY.GDP.MKTP.CD", text: "GDP (Current US$)" },
-            { value: "NY.GDP.PCAP.CD", text: "GDP per Capita (Current US$)" },
-            { value: "NY.GDP.MKTP.KD.ZG", text: "GDP Growth (Annual %)" },
-            { value: "SP.POP.TOTL", text: "Population, Total" },
-            { value: "SL.UEM.TOTL.ZS", text: "Unemployment (% of labor force)" },
-            { value: "EN.ATM.CO2E.PC", text: "CO₂ Emissions (Metric tons per capita)" },
-            { value: "FP.CPI.TOTL.ZG", text: "Inflation, Consumer Prices (Annual %)" },
-            { value: "NE.EXP.GNFS.CD", text: "Exports of Goods and Services (Current US$)" },
-            { value: "NE.IMP.GNFS.CD", text: "Imports of Goods and Services (Current US$)" },
-            { value: "IT.CEL.SETS.P2", text: "Mobile Cellular Subscriptions (per 100 people)" },
-            { value: "EG.ELC.ACCS.ZS", text: "Access to Electricity (% of Population)" },
-            { value: "SE.XPD.TOTL.GD.ZS", text: "Government Expenditure on Education (% of GDP)" },
-            { value: "SI.POV.DDAY", text: "Poverty Headcount Ratio at $1.90/day" }
-        ];
-        const indicatorMetadata = {
-            "NY.GDP.MKTP.CD": { unit: "USD", formatter: value => "$" + new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(value) },
-            "NY.GDP.PCAP.CD": { unit: "USD", formatter: value => "$" + new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(value) },
-            "NY.GDP.MKTP.KD.ZG": { unit: "%", formatter: value => d3.format(".1f")(value) + '%' },
-            "SP.POP.TOTL": { unit: "", formatter: value => new Intl.NumberFormat().format(value) },
-            "SL.UEM.TOTL.ZS": { unit: "%", formatter: value => d3.format(".1f")(value) + '%' },
-            "EN.ATM.CO2E.PC": { unit: "", formatter: value => new Intl.NumberFormat().format(value) },
-            "FP.CPI.TOTL.ZG": { unit: "%", formatter: value => d3.format(".1f")(value) + '%' },
-            "NE.EXP.GNFS.CD": { unit: "USD", formatter: value => "$" + new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(value) },
-            "NE.IMP.GNFS.CD": { unit: "USD", formatter: value => "$" + new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(value) },
-            "IT.CEL.SETS.P2": { unit: "", formatter: value => new Intl.NumberFormat().format(value) },
-            "EG.ELC.ACCS.ZS": { unit: "%", formatter: value => d3.format(".1f")(value) + '%' },
-            "SE.XPD.TOTL.GD.ZS": { unit: "%", formatter: value => d3.format(".1f")(value) + '%' },
-            "SI.POV.DDAY": { unit: "", formatter: value => new Intl.NumberFormat().format(value) }
-        };
-
-        const quadrantColors = {
-            q1: '#FF0000',  // oben rechts (rot)
-            q2: '#FFA500',  // oben links (orange)
-            q3: '#1E90FF',  // unten links (blau)
-            q4: '#FFA500'   // unten rechts (orange)
-        };
-
-        function getQuadrantColor(xValue, yValue, xScale, yScale) {
-            const xMid = (xScale.domain()[0] + xScale.domain()[1]) / 2;
-            const yMid = (yScale.domain()[0] + yScale.domain()[1]) / 2;
-
-            // x >= xMid => rechte Seite
-            // y >= yMid => obere Seite
-            if (xValue >= xMid && yValue >= yMid) {
-                return quadrantColors.q1;
-            } else if (xValue < xMid && yValue >= yMid) {
-                return quadrantColors.q2;
-            } else if (xValue < xMid && yValue < yMid) {
-                return quadrantColors.q3;
-            } else {
-                return quadrantColors.q4;
-            }
-        }
-
-        const abbreviatedFormatter = d3.format(".2s");
-        function getFormattedTick(value, indicator) {
-            if (value === null || value === undefined || isNaN(value)) return "0";
-            const meta = indicatorMetadata[indicator];
-            if (meta) {
-                if (meta.unit === '%') return d3.format(".1f")(value) + '%';
-                else if (meta.unit === 'USD') {
-                    if (Math.abs(value) >= 1e12) return d3.format("$,.2s")(value);
-                    return "$" + new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(value);
-                } else {
-                    if (Math.abs(value) >= 1000) return abbreviatedFormatter(value);
-                    return value;
-                }
-            }
-            return value;
-        }
-        const defaultXIndicator = "NY.GDP.PCAP.CD";
-        const defaultYIndicator = "NY.GDP.MKTP.CD";
-        const chartInstances = {};
-        let nextChartId = 0;
-        const flagPlugin = {
-            id: 'flagPlugin',
-            afterDatasetsDraw(chart, args, options) {
-                const { ctx } = chart;
-                chart.data.datasets.forEach((dataset, i) => {
-                    const meta = chart.getDatasetMeta(i);
-                    if (!meta.hidden && meta.data.length > 0 && dataset.flagUrl) {
-                        const lastPoint = meta.data[meta.data.length - 1];
-                        const img = new Image();
-                        img.src = dataset.flagUrl;
-                        img.onload = function () {
-                            const imgWidth = 50;
-                            const imgHeight = 30;
-                            ctx.drawImage(img, lastPoint.x + 5, lastPoint.y - imgHeight / 2, imgWidth, imgHeight);
-                        };
-                    }
-                });
-            }
-        };
-        function getRandomColor(opacity = 1) {
-            const r = Math.floor(Math.random() * 156) + 100;
-            const g = Math.floor(Math.random() * 156) + 100;
-            const b = Math.floor(Math.random() * 156) + 100;
-            return `rgba(${r}, ${g}, ${b}, ${opacity})`;
-        }
-        function filterDataByYears(data, startYear, endYear) {
-            const filtered = { years: [], values: [] };
-            for (let i = 0; i < data.years.length; i++) {
-                const yr = parseInt(data.years[i]);
-                if (yr >= startYear && yr <= endYear) {
-                    filtered.years.push(data.years[i]);
-                    filtered.values.push(data.values[i]);
-                }
-            }
-            return filtered;
-        }
-        async function fetchIndicatorData(country, indicator) {
-            const url = `https://api.worldbank.org/v2/country/${country}/indicator/${indicator}?format=json&per_page=1000`;
-            try {
-                const response = await fetch(url);
-                const json = await response.json();
-                if (!json || json.length < 2) return { years: [], values: [] };
-                const rawData = json[1].filter(d => d.value !== null);
-                rawData.sort((a, b) => parseInt(a.date) - parseInt(b.date));
-                const years = rawData.map(d => d.date);
-                const values = rawData.map(d => d.value);
-                return { years, values };
-            } catch (error) {
-                console.error("Error fetching data for", country, error);
-                return { years: [], values: [] };
-            }
-        }
-        async function getChartDataForIndicator(indicator, gridSuffix) {
-            const selectedCountries = window.selectedCountries || [];
-            const state = getQuadrantState(gridSuffix);
-            const datasets = await Promise.all(selectedCountries.map(async (countryIso3) => {
-                const countryObj = countriesData.find(c => c.id === countryIso3);
-                const completeData = await fetchIndicatorData(countryIso3, indicator);
-                const filteredData = filterDataByYears(completeData, yearRange[0], yearRange[1]);
-                let lineColor = '#CCCCCC';
-                if (state.data.length > 0) {
-                    const countryData = state.data.find(d => d.country.id === countryIso3);
-                    if (countryData && countryData.data.length > 0) {
-                        const endYearData = countryData.data[countryData.data.length - 1];
-                        lineColor = getQuadrantColor(
-                            endYearData.x,
-                            endYearData.y,
-                            state.xScale,
-                            state.yScale
-                        );
-                    }
-                }
-                return {
-                    label: countryObj.name,
-                    data: filteredData.values,
-                    borderColor: lineColor,
-                    backgroundColor: lineColor + '33',
-                    fill: false,
-                    tension: 0.1,
-                    flagUrl: `https://flagcdn.com/w80/${countryObj.iso2Code.toLowerCase()}.png`,
-                    years: filteredData.years
-                };
-            }));
-            return { chartLabels: datasets[0]?.years || [], datasets };
-        }
-        async function updateChartInstance(chartObj, containerId) {
-            const gridSuffix = containerId.replace('chartsContainer', '');
-            const indicator = chartObj.indicatorSelect.value;
-            const data = await getChartDataForIndicator(indicator, gridSuffix);
-            if (!data) return;
-            const selectedInd = indicators.find(ind => ind.value === indicator);
-            chartObj.chart.options.plugins.title.text = selectedInd ? selectedInd.text : "";
-            chartObj.chart.data.labels = data.chartLabels;
-            chartObj.chart.data.datasets = data.datasets;
-            chartObj.chart.options.scales.y.ticks.callback = function (value) {
-                return getFormattedTick(value, indicator);
-            };
-            chartObj.chart.update();
-        }
-        async function updateAllCharts() {
-            for (const gridId in chartInstances) {
-                const instances = chartInstances[gridId];
-                for (const chartObj of instances) {
-                    await updateChartInstance(chartObj, gridId);
-                }
-            }
-            const gridContainer = document.getElementById("chartGridsContainer");
-            const grids = gridContainer.querySelectorAll(".charts-grid");
-            grids.forEach((grid) => {
-                const gridSuffix = grid.id.replace('grid', '');
-                loadQuadrantData(gridSuffix);
-            });
-        }
-        document.addEventListener("click", function (e) {
-            if (e.target && e.target.classList.contains("expand-btn")) {
-                const container = e.target.closest(".line-chart-wrapper, .quadrant-chart");
-                const isExpanded = container.classList.contains("expanded");
-                container.classList.toggle("expanded");
-                e.target.innerHTML = container.classList.contains("expanded") ? "✕" : "⛶";
-                const blurOverlay = document.getElementById("globalBlurOverlay");
-                if (container.classList.contains("expanded")) {
-                    blurOverlay.classList.add("active");
-                } else {
-                    blurOverlay.classList.remove("active");
-                }
-                window.dispatchEvent(new Event('resize'));
-                if (container.classList.contains("quadrant-chart")) {
-                    const quadrantContainer = container.querySelector(".quadrant-chart-container");
-                    if (isExpanded) {
-                        quadrantContainer.style.width = "100%";
-                        quadrantContainer.style.height = "600px";
-                    } else {
-                        quadrantContainer.style.width = "80%";
-                        quadrantContainer.style.height = "80%";
-                    }
-                }
-                if (container.classList.contains("line-chart-wrapper")) {
-                    const chartCanvas = container.querySelector(".chart-canvas");
-                    if (isExpanded) {
-                        chartCanvas.style.width = "100%";
-                        chartCanvas.style.height = "100%";
-                    } else {
-                        chartCanvas.style.width = "80%";
-                        chartCanvas.style.height = "80%";
-                    }
-                }
-            }
-        });
-        async function createNewChartInstance(defaultIndicator, containerId) {
-            const gridSuffix = containerId.replace('chartsContainer', '');
-            await getChartDataForIndicator(defaultIndicator, gridSuffix);
-            const chartsContainer = document.getElementById(containerId);
-            const chartWrapper = document.createElement("div");
-            chartWrapper.classList.add("line-chart-wrapper");
-            const expandBtn = document.createElement("button");
-            expandBtn.className = "expand-btn";
-            expandBtn.title = "Expand Chart";
-            expandBtn.innerHTML = "⛶";
-            chartWrapper.appendChild(expandBtn);
-            const indicatorSelect = document.createElement("select");
-            indicatorSelect.classList.add("indicatorSelect");
-            indicators.forEach(ind => {
-                const option = document.createElement("option");
-                option.value = ind.value;
-                option.textContent = ind.text;
-                indicatorSelect.appendChild(option);
-            });
-            indicatorSelect.value = defaultIndicator || indicators[0].value;
-            indicatorSelect.addEventListener("change", () => {
-                const instance = chartInstances[containerId].find(obj => obj.indicatorSelect === indicatorSelect);
-                if (instance) updateChartInstance(instance, containerId);
-            });
-            chartWrapper.appendChild(indicatorSelect);
-            const canvas = document.createElement("canvas");
-            canvas.id = `chartCanvas${nextChartId++}`;
-            canvas.classList.add("chart-canvas");
-            chartWrapper.appendChild(canvas);
-            chartsContainer.appendChild(chartWrapper);
-            const ctx = canvas.getContext("2d");
-            const newChart = new Chart(ctx, {
-                type: 'line',
-                data: { labels: [], datasets: [] },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    layout: { padding: { right: 70 } },
-                    plugins: { title: { display: false } },
-                    scales: {
-                        x: { title: { display: true, text: 'Year' } },
-                        y: { title: { display: true, text: 'Value' }, ticks: { callback: value => value } }
-                    }
-                },
-                plugins: [flagPlugin]
-            });
-            if (!chartInstances[containerId]) chartInstances[containerId] = [];
-            chartInstances[containerId].push({ chart: newChart, indicatorSelect: indicatorSelect });
-        }
-        let quadrantStates = {};
-        function getQuadrantState(gridSuffix) {
-            if (!quadrantStates[gridSuffix]) {
-                quadrantStates[gridSuffix] = {
-                    data: [],
-                    years: [],
-                    currentYearIndex: 0,
-                    svgSelection: null,
-                    width: 0,
-                    height: 0,
-                    history: {}
-                };
-            }
-            return quadrantStates[gridSuffix];
-        }
-        function resetQuadrantChart(gridSuffix) {
-            const state = getQuadrantState(gridSuffix);
-            const container = document.getElementById("quadrantChartContainer" + gridSuffix);
-            const containerWidth = container.clientWidth;
-            const containerHeight = container.clientHeight;
-            d3.select("#quadrantChartContainer" + gridSuffix).selectAll("*").remove();
-            state.svgSelection = d3.select("#quadrantChartContainer" + gridSuffix)
-                .append("svg")
-                .attr("width", containerWidth)
-                .attr("height", containerHeight)
-                .append("g")
-                .attr("transform", `translate(${margin.top},${margin.left})`);
-            state.width = containerWidth - margin.left - margin.right;
-            state.height = containerHeight - margin.top - margin.bottom;
-        }
-        function getSelectedQuadrantIndicators(gridSuffix) {
-            const xIndicator = document.getElementById("xIndicatorSelect" + gridSuffix).value;
-            const yIndicator = document.getElementById("yIndicatorSelect" + gridSuffix).value;
-            return { xIndicator, yIndicator };
-        }
-        async function loadQuadrantData(gridSuffix) {
-            resetQuadrantChart(gridSuffix);
-            const state = getQuadrantState(gridSuffix);
-            const selectedCountryIds = window.selectedCountries;
-            if (!selectedCountryIds || selectedCountryIds.length === 0) return;
-            const { xIndicator, yIndicator } = getSelectedQuadrantIndicators(gridSuffix);
-            state.data = [];
-            await Promise.all(selectedCountryIds.map(async countryId => {
-                const countryObj = countriesData.find(c => c.id === countryId) ||
-                    { id: countryId, name: countryId, iso2Code: countryId.substring(0, 2).toLowerCase() };
-                const xData = await fetchIndicatorData(countryId, xIndicator);
-                const yData = await fetchIndicatorData(countryId, yIndicator);
-                const xMap = new Map();
-                xData.years.forEach((yr, i) => { xMap.set(yr, xData.values[i]); });
-                const yMap = new Map();
-                yData.years.forEach((yr, i) => { yMap.set(yr, yData.values[i]); });
-                const commonYears = xData.years.filter(yr => yMap.has(yr)).sort((a, b) => a - b);
-                const filteredYears = commonYears.filter(yr => +yr >= yearRange[0] && +yr <= yearRange[1]);
-                const dataPoints = filteredYears.map(yr => ({ year: +yr, x: +xMap.get(yr), y: +yMap.get(yr) }));
-                state.data.push({ country: countryObj, data: dataPoints });
-            }));
-            if (state.data.length > 0) {
-                const allYears = state.data.map(d => d.data.map(p => p.year));
-                state.years = allYears.reduce((acc, curr) => acc.filter(y => curr.includes(y)));
-                state.years.sort((a, b) => a - b);
-            }
-            state.currentYearIndex = 0;
-            state.history = {};
-            drawQuadrantChart(gridSuffix);
-            updateYearMarker(gridSuffix);
-        }
-        function drawQuadrantChart(gridSuffix) {
-            const state = getQuadrantState(gridSuffix);
-            const { xIndicator, yIndicator } = getSelectedQuadrantIndicators(gridSuffix);
-            const allPoints = state.data.flatMap(d => d.data);
-            const xScale = d3.scaleLinear()
-                .domain(d3.extent(allPoints, d => d.x)).nice()
-                .range([0, state.width]);
-            const yScale = d3.scaleLinear()
-                .domain(d3.extent(allPoints, d => d.y)).nice()
-                .range([state.height, 0]);
-            state.xScale = xScale;
-            state.yScale = yScale;
-            const xMid = xScale((xScale.domain()[0] + xScale.domain()[1]) / 2);
-            const yMid = yScale((yScale.domain()[0] + yScale.domain()[1]) / 2);
-            const quadrants = [
-                { x: 0, y: 0, width: xMid, height: yMid, fill: "#FFA500" },
-                { x: xMid, y: 0, width: state.width - xMid, height: yMid, fill: "#FF0000" },
-                { x: 0, y: yMid, width: xMid, height: state.height - yMid, fill: "#1E90FF" },
-                { x: xMid, y: yMid, width: state.width - xMid, height: state.height - yMid, fill: "#FFA500" }
-            ];
-            quadrants.forEach((quadrant) => {
-                state.svgSelection.insert("rect", ":first-child")
-                    .attr("x", quadrant.x)
-                    .attr("y", quadrant.y)
-                    .attr("width", quadrant.width)
-                    .attr("height", quadrant.height)
-                    .attr("fill", quadrant.fill)
-                    .attr("opacity", 0.3);
-                let iconClass = "";
-                if (quadrant.fill === "#FF0000") iconClass = "fas fa-fire";
-                else if (quadrant.fill === "#1E90FF") iconClass = "fas fa-snowflake";
-                else if (quadrant.fill === "#FFA500") iconClass = "fas fa-adjust";
-                const iconWidth = 40, iconHeight = 40;
-                state.svgSelection.append("foreignObject")
-                    .attr("x", quadrant.x + 5)
-                    .attr("y", quadrant.y + quadrant.height - iconHeight - 5)
-                    .attr("width", iconWidth)
-                    .attr("height", iconHeight)
-                    .append("xhtml:div")
-                    .html(`<i class="${iconClass}" style="opacity:0.3; font-size:40px; color:#fff;"></i>`);
-            });
-            state.svgSelection.append("g")
-                .attr("class", "axis x-axis")
-                .attr("transform", `translate(0,${state.height})`)
-                .call(d3.axisBottom(xScale).tickFormat(d => {
-                    let formatted = d3.format(".2s")(d);
-                    if (indicatorMetadata[xIndicator] && indicatorMetadata[xIndicator].unit === '%') {
-                        formatted += '%';
-                    }
-                    return formatted;
-                }));
-            state.svgSelection.append("g")
-                .attr("class", "axis y-axis")
-                .call(d3.axisLeft(yScale).tickFormat(d => {
-                    let formatted = d3.format(".2s")(d);
-                    if (indicatorMetadata[yIndicator] && indicatorMetadata[yIndicator].unit === '%') {
-                        formatted += '%';
-                    }
-                    return formatted;
-                }));
-            state.svgSelection.append("line")
-                .attr("x1", xScale((xScale.domain()[0] + xScale.domain()[1]) / 2))
-                .attr("x2", xScale((xScale.domain()[0] + xScale.domain()[1]) / 2))
-                .attr("y1", 0)
-                .attr("y2", state.height)
-                .attr("stroke", "#ccc")
-                .attr("stroke-dasharray", "4,4");
-            state.svgSelection.append("line")
-                .attr("y1", yScale((yScale.domain()[0] + yScale.domain()[1]) / 2))
-                .attr("y2", yScale((yScale.domain()[0] + yScale.domain()[1]) / 2))
-                .attr("x1", 0)
-                .attr("x2", state.width)
-                .attr("stroke", "#ccc")
-                .attr("stroke-dasharray", "4,4");
-            state.data.forEach(d => {
-                state.history[d.country.id] = [];
-                const g = state.svgSelection.append("g")
-                    .attr("class", "country-group")
-                    .attr("id", "group-" + d.country.id + gridSuffix);
-                g.append("path")
-                    .attr("class", "country-path")
-                    .attr("id", "path-" + d.country.id + gridSuffix)
-                    .attr("fill", "none")
-                    .attr("stroke", getRandomColor(1))
-                    .attr("stroke-width", 2);
-                g.append("circle")
-                    .attr("class", "country-circle")
-                    .attr("id", "circle-" + d.country.id + gridSuffix)
-                    .attr("r", 5)
-                    .attr("fill", getRandomColor(1));
-            });
-        }
-        function updateQuadrantChart(gridSuffix) {
-            const state = getQuadrantState(gridSuffix);
-            if (state.currentYearIndex >= state.years.length) return;
-            const year = state.years[state.currentYearIndex];
-            const { xIndicator, yIndicator } = getSelectedQuadrantIndicators(gridSuffix);
-            state.data.forEach(d => {
-                const datum = d.data.find(p => p.year === year);
-                if (datum) {
-                    state.history[d.country.id].push(datum);
-                    const circleSelection = d3.select("#circle-" + d.country.id + gridSuffix);
-                    circleSelection
-                        .on("mouseover", function (event) {
-                            d3.select("#tooltip").style("opacity", 1)
-                                .html(`Year: ${datum.year}<br>${xIndicator}: ${datum.x}<br>${yIndicator}: ${datum.y}`);
-                        })
-                        .on("mousemove", function (event) {
-                            d3.select("#tooltip").style("left", (event.pageX + 10) + "px")
-                                .style("top", (event.pageY + 10) + "px");
-                        })
-                        .on("mouseout", function () {
-                            d3.select("#tooltip").style("opacity", 0);
-                        })
-                        .transition()
-                        .duration(500)
-                        .attr("cx", state.xScale(datum.x))
-                        .attr("cy", state.yScale(datum.y))
-                        .attr("fill", getQuadrantColor(datum.x, datum.y, state.xScale, state.yScale))
-                        .on("end", function () {
-                            d3.select(this.parentNode).select("image").remove();
-                            const flagImg = d3.select(this.parentNode)
-                                .append("svg:image")
-                                .attr("xlink:href", `https://flagcdn.com/w80/${d.country.iso2Code.toLowerCase()}.png`)
-                                .attr("width", 40)
-                                .attr("height", 25)
-                                .attr("x", state.xScale(datum.x) + 8)
-                                .attr("y", state.yScale(datum.y) - 12);
-                            flagImg
-                                .on("mouseover", function (event) {
-                                    d3.select("#tooltip").style("opacity", 1)
-                                        .html(`Year: ${datum.year}<br>${xIndicator}: ${datum.x}<br>${yIndicator}: ${datum.y}`);
-                                })
-                                .on("mousemove", function (event) {
-                                    d3.select("#tooltip").style("left", (event.pageX + 10) + "px")
-                                        .style("top", (event.pageY + 10) + "px");
-                                })
-                                .on("mouseout", function () {
-                                    d3.select("#tooltip").style("opacity", 0);
-                                });
-                        });
-                    const lineGenerator = d3.line()
-                        .x(d => state.xScale(d.x))
-                        .y(d => state.yScale(d.y));
-                    d3.select("#path-" + d.country.id + gridSuffix)
-                        .attr("d", lineGenerator(state.history[d.country.id]));
-                }
-            });
-            updateYearMarker(gridSuffix);
-        }
-        function updateYearMarker(gridSuffix) {
-            const state = getQuadrantState(gridSuffix);
-            if (state.years.length === 0) return;
-            const year = state.currentYearIndex < state.years.length ? state.years[state.currentYearIndex] : state.years[state.years.length - 1];
-            const marker = document.getElementById("yearMarker" + gridSuffix);
-            marker.textContent = year;
-            const scaleContainer = document.getElementById("quadrantYearScale" + gridSuffix);
-            const containerWidth = scaleContainer.clientWidth;
-            const markerWidth = marker.clientWidth;
-            const minYear = state.years[0];
-            const maxYear = state.years[state.years.length - 1];
-            const pos = ((year - minYear) / (maxYear - minYear)) * (containerWidth - markerWidth);
-            marker.style.left = pos + "px";
-        }
-        function playQuadrantChart(gridSuffix) {
-            const state = getQuadrantState(gridSuffix);
-            state.currentYearIndex = 0;
-            state.data.forEach(d => {
-                state.history[d.country.id] = [];
-                d3.select("#path-" + d.country.id + gridSuffix).attr("d", null);
-                d3.select("#circle-" + d.country.id + gridSuffix)
-                    .attr("cx", null)
-                    .attr("cy", null);
-                d3.select("#group-" + d.country.id + gridSuffix).selectAll("image").remove();
-            });
-            updateYearMarker(gridSuffix);
-            const interval = d3.interval(() => {
-                if (state.currentYearIndex >= state.years.length) {
-                    interval.stop();
-                    return;
-                }
-                updateQuadrantChart(gridSuffix);
-                state.currentYearIndex++;
-            }, 500);
-        }
-        function populateQuadrantIndicatorDropdownsForGrid(gridSuffix) {
-            const xSelect = document.getElementById("xIndicatorSelect" + gridSuffix);
-            const ySelect = document.getElementById("yIndicatorSelect" + gridSuffix);
-            indicators.forEach(ind => {
-                const optX = document.createElement("option");
-                optX.value = ind.value;
-                optX.textContent = ind.text;
-                xSelect.appendChild(optX);
-                const optY = document.createElement("option");
-                optY.value = ind.value;
-                optY.textContent = ind.text;
-                ySelect.appendChild(optY);
-            });
-            xSelect.value = defaultXIndicator;
-            ySelect.value = defaultYIndicator;
-
-            // When the x-axis indicator changes, update quadrant data and all line charts.
-            xSelect.addEventListener("change", () => {
-                loadQuadrantData(gridSuffix);
-                updateAllCharts();
-            });
-            // When the y-axis indicator changes, update quadrant data and all line charts.
-            ySelect.addEventListener("change", () => {
-                loadQuadrantData(gridSuffix);
-                updateAllCharts();
-            });
-        }
-
-        function createNewChartGrid() {
-            const gridContainer = document.getElementById("chartGridsContainer");
-            const gridCount = gridContainer.querySelectorAll('.charts-grid').length + 1;
-            const newGrid = document.createElement("div");
-            newGrid.className = "charts-grid";
-            newGrid.id = `grid${gridCount}`;
-            const quadrantDiv = document.createElement("div");
-            quadrantDiv.className = "quadrant-chart";
-            quadrantDiv.setAttribute("data-chart-type", "quadrant");
-            quadrantDiv.innerHTML = `
-        <div id="quadrantLeftContainer${gridCount}" style="position: relative;">
+  <!-- Dashboard Container -->
+  <div class="dashboard-container">
+    <!-- Container for Multiple Chart Grids -->
+    <div id="chartGridsContainer">
+      <!-- Initial Chart Grid (Grid 1) with added quadrant control container -->
+      <div class="charts-grid" id="grid1">
+        <!-- Left Column: Quadrant Chart -->
+        <div class="quadrant-chart" data-chart-type="quadrant" id="quadrantLeftContainer1">
           <button class="expand-btn" title="Expand Chart">⛶</button>
-          <div id="quadrantDropdownContainer${gridCount}">
+          <div id="quadrantDropdownContainer1">
             <div>
-              <label for="xIndicatorSelect${gridCount}">X-Axis Indicator:</label>
-              <select id="xIndicatorSelect${gridCount}"></select>
+              <label for="xIndicatorSelect1">X-Axis Indicator:</label>
+              <select id="xIndicatorSelect1"></select>
             </div>
             <div>
-              <label for="yIndicatorSelect${gridCount}">Y-Axis Indicator:</label>
-              <select id="yIndicatorSelect${gridCount}"></select>
+              <label for="yIndicatorSelect1">Y-Axis Indicator:</label>
+              <select id="yIndicatorSelect1"></select>
             </div>
           </div>
-          <div id="quadrantChartContainer${gridCount}" style="height:600px;"></div>
+          <div id="quadrantChartContainer1" class="quadrant-chart-container" style="height:60vh;"></div>
+          <div id="quadrantControlContainer1">
+            <button id="quadrantPlayButton1">&#9658;</button>
+            <div id="quadrantYearScale1">
+              <div id="yearMarker1">-</div>
+            </div>
+          </div>
         </div>
+        <!-- Right Column: Line Charts -->
+        <div class="line-charts" id="chartsContainer1">
+          <!-- Line charts will be dynamically added here -->
+        </div>
+      </div>
+    </div>
+    <!-- Add Chart Grid Button -->
+    <button id="addChartBtn">Add Chart Grid</button>
+    <!-- Create Presentation Button -->
+    <button id="createPresentation">Create Presentation</button>
+  </div>
+
+  <!-- Modal for Expanded Quadrant Chart -->
+  <div id="chartModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <div id="modalQuadrantDropdownContainer" style="margin-bottom: 10px; text-align: center;">
+        <div style="display:inline-block; margin-right: 20px;">
+          <label for="modalXIndicatorSelect">X-Axis Indicator:</label>
+          <select id="modalXIndicatorSelect"></select>
+        </div>
+        <div style="display:inline-block;">
+          <label for="modalYIndicatorSelect">Y-Axis Indicator:</label>
+          <select id="modalYIndicatorSelect"></select>
+        </div>
+      </div>
+      <svg id="modalQuadrantSvg" width="600" height="600"></svg>
+      <div id="modalQuadrantControls" style="text-align: center; margin-top: 10px;">
+        <button id="modalQuadrantPlayButton">&#9658;</button>
+        <span id="modalYearMarker" style="margin-left: 10px;">Year: -</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Expanded Line Chart -->
+  <div id="lineChartModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" id="closeLineChartModal">&times;</span>
+      <canvas id="modalLineChartCanvas"></canvas>
+    </div>
+  </div>
+
+  <!-- Tooltip element -->
+  <div id="tooltip"></div>
+
+  <!-- Loading Spinner Overlay -->
+  <div id="spinnerOverlay" class="spinner-overlay" style="display: none;">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Scripts wrapped in DOMContentLoaded -->
+  <script>
+    // Helper function to fetch image as Base64 data URL
+    async function getBase64Image(url) {
+      try {
+        const response = await fetch(url, { mode: "cors" });
+        const blob = await response.blob();
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+      } catch (err) {
+        console.error("Error fetching image:", err);
+        return null;
+      }
+    }
+
+    // Helper function to append a flag image (using Base64) to a D3 selection
+    async function appendFlagImage(selection, country, pos) {
+      const flagUrl = `https://flagcdn.com/w80/${country.iso2Code.toLowerCase()}.png`;
+      const base64Data = await getBase64Image(flagUrl);
+      if (!base64Data) return;
+      selection.append("svg:image")
+        .attr("data-country", country.id)
+        .attr("href", base64Data)
+        .attr("width", 40)
+        .attr("height", 25)
+        .attr("x", pos.x)
+        .attr("y", pos.y);
+    }
+
+    // Global variable to track which grid's quadrant chart is shown in the modal
+    let currentModalGridSuffix = null;
+    document.addEventListener("DOMContentLoaded", function () {
+      // Sidebar Toggle Script
+      const burgerIcon = document.getElementById('burgerIcon');
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('overlay');
+      const closeSidebar = document.getElementById('closeSidebar');
+      burgerIcon.addEventListener('click', () => {
+        sidebar.classList.add('active');
+        overlay.classList.add('active');
+      });
+      closeSidebar.addEventListener('click', () => {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+      });
+      overlay.addEventListener('click', () => {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+      });
+      const accountIcon = document.getElementById('accountIcon');
+      accountIcon.addEventListener('click', () => {
+        window.location.href = "{{url_for('account')}}";
+      });
+      // Attach modal close event listener for quadrant modal
+      const closeBtn = document.querySelector("#chartModal .close-modal");
+      if (closeBtn) {
+        closeBtn.addEventListener("click", closeModal);
+      } else {
+        console.warn("Close modal button not found");
+      }
+    });
+  </script>
+
+  <!-- Dashboard & Charts Script -->
+  <script>
+    let countriesData = [];
+    let yearRange = [2010, 2021];
+    const margin = { top: 20, right: 20, bottom: 40, left: 40 };
+    const indicators = [
+      { value: "NY.GDP.MKTP.CD", text: "GDP (Current US$)" },
+      { value: "NY.GDP.PCAP.CD", text: "GDP per Capita (Current US$)" },
+      { value: "NY.GDP.MKTP.KD.ZG", text: "GDP Growth (Annual %)" },
+      { value: "SP.POP.TOTL", text: "Population, Total" },
+      { value: "SL.UEM.TOTL.ZS", text: "Unemployment (% of labor force)" },
+      { value: "EN.ATM.CO2E.PC", text: "CO₂ Emissions (Metric tons per capita)" },
+      { value: "FP.CPI.TOTL.ZG", text: "Inflation, Consumer Prices (Annual %)" },
+      { value: "NE.EXP.GNFS.CD", text: "Exports of Goods and Services (Current US$)" },
+      { value: "NE.IMP.GNFS.CD", text: "Imports of Goods and Services (Current US$)" },
+      { value: "IT.CEL.SETS.P2", text: "Mobile Cellular Subscriptions (per 100 people)" },
+      { value: "EG.ELC.ACCS.ZS", text: "Access to Electricity (% of Population)" },
+      { value: "SE.XPD.TOTL.GD.ZS", text: "Government Expenditure on Education (% of GDP)" },
+      { value: "SI.POV.DDAY", text: "Poverty Headcount Ratio at $1.90/day" }
+    ];
+    const indicatorMetadata = {
+      "NY.GDP.MKTP.CD": { unit: "USD", formatter: value => "$" + new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(value) },
+      "NY.GDP.PCAP.CD": { unit: "USD", formatter: value => "$" + new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(value) },
+      "NY.GDP.MKTP.KD.ZG": { unit: "%", formatter: value => d3.format(".1f")(value) + '%' },
+      "SP.POP.TOTL": { unit: "", formatter: value => new Intl.NumberFormat().format(value) },
+      "SL.UEM.TOTL.ZS": { unit: "%", formatter: value => d3.format(".1f")(value) + '%' },
+      "EN.ATM.CO2E.PC": { unit: "", formatter: value => new Intl.NumberFormat().format(value) },
+      "FP.CPI.TOTL.ZG": { unit: "%", formatter: value => d3.format(".1f")(value) + '%' },
+      "NE.EXP.GNFS.CD": { unit: "USD", formatter: value => "$" + new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(value) },
+      "NE.IMP.GNFS.CD": { unit: "USD", formatter: value => "$" + new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(value) },
+      "IT.CEL.SETS.P2": { unit: "", formatter: value => new Intl.NumberFormat().format(value) },
+      "EG.ELC.ACCS.ZS": { unit: "%", formatter: value => d3.format(".1f")(value) + '%' },
+      "SE.XPD.TOTL.GD.ZS": { unit: "%", formatter: value => d3.format(".1f")(value) + '%' },
+      "SI.POV.DDAY": { unit: "", formatter: value => new Intl.NumberFormat().format(value) }
+    };
+    const quadrantColors = {
+      q1: '#FF0000',
+      q2: '#FFA500',
+      q3: '#1E90FF',
+      q4: '#FFA500'
+    };
+    function getQuadrantColor(xValue, yValue, xScale, yScale) {
+      const xMid = (xScale.domain()[0] + xScale.domain()[1]) / 2;
+      const yMid = (yScale.domain()[0] + yScale.domain()[1]) / 2;
+      if (xValue >= xMid && yValue >= yMid) {
+        return quadrantColors.q1;
+      } else if (xValue < xMid && yValue >= yMid) {
+        return quadrantColors.q2;
+      } else if (xValue < xMid && yValue < yMid) {
+        return quadrantColors.q3;
+      } else {
+        return quadrantColors.q4;
+      }
+    }
+    const abbreviatedFormatter = d3.format(".2s");
+    function getFormattedTick(value, indicator) {
+      if (value === null || value === undefined || isNaN(value)) return "0";
+      const meta = indicatorMetadata[indicator];
+      if (meta) {
+        if (meta.unit === '%') return d3.format(".1f")(value) + '%';
+        else if (meta.unit === 'USD') {
+          if (Math.abs(value) >= 1e12) return d3.format("$,.2s")(value);
+          return "$" + new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(value);
+        } else {
+          if (Math.abs(value) >= 1000) return abbreviatedFormatter(value);
+          return value;
+        }
+      }
+      return value;
+    }
+    const defaultXIndicator = "NY.GDP.PCAP.CD";
+    const defaultYIndicator = "NY.GDP.MKTP.CD";
+    const chartInstances = {};  // keyed by chartsContainer id
+    let nextChartId = 0;
+    const flagPlugin = {
+      id: 'flagPlugin',
+      afterDatasetsDraw(chart, args, options) {
+        const { ctx } = chart;
+        chart.data.datasets.forEach((dataset, i) => {
+          const meta = chart.getDatasetMeta(i);
+          if (!meta.hidden && meta.data.length > 0 && dataset.flagUrl) {
+            const lastPoint = meta.data[meta.data.length - 1];
+            const img = new Image();
+            // Set crossOrigin attribute to avoid tainting the canvas.
+            img.crossOrigin = 'anonymous';
+            img.src = dataset.flagUrl;
+            img.onload = function () {
+              const imgWidth = 20;
+              const imgHeight = 10;
+              ctx.drawImage(img, lastPoint.x + 5, lastPoint.y - imgHeight / 2, imgWidth, imgHeight);
+            };
+          }
+        });
+      }
+    };
+
+    function getRandomColor(opacity = 1) {
+      const r = Math.floor(Math.random() * 156) + 100;
+      const g = Math.floor(Math.random() * 156) + 100;
+      const b = Math.floor(Math.random() * 156) + 100;
+      return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+    }
+    function filterDataByYears(data, startYear, endYear) {
+      const filtered = { years: [], values: [] };
+      for (let i = 0; i < data.years.length; i++) {
+        const yr = parseInt(data.years[i]);
+        if (yr >= startYear && yr <= endYear) {
+          filtered.years.push(data.years[i]);
+          filtered.values.push(data.values[i]);
+        }
+      }
+      return filtered;
+    }
+    async function fetchIndicatorData(country, indicator) {
+      const url = `https://api.worldbank.org/v2/country/${country}/indicator/${indicator}?format=json&per_page=1000`;
+      try {
+        const response = await fetch(url);
+        const json = await response.json();
+        if (!json || json.length < 2) return { years: [], values: [] };
+        const rawData = json[1].filter(d => d.value !== null);
+        rawData.sort((a, b) => parseInt(a.date) - parseInt(b.date));
+        const years = rawData.map(d => d.date);
+        const values = rawData.map(d => d.value);
+        return { years, values };
+      } catch (error) {
+        console.error("Error fetching data for", country, error);
+        return { years: [], values: [] };
+      }
+    }
+    async function getChartDataForIndicator(indicator, gridSuffix) {
+      const selectedCountries = window.selectedCountries || [];
+      const state = getQuadrantState(gridSuffix);
+      const datasets = await Promise.all(selectedCountries.map(async (countryIso3) => {
+        const countryObj = countriesData.find(c => c.id === countryIso3);
+        if (!countryObj) {
+          return null;
+        }
+        const completeData = await fetchIndicatorData(countryIso3, indicator);
+        const filteredData = filterDataByYears(completeData, yearRange[0], yearRange[1]);
+        let lineColor = '#CCCCCC';
+        if (state.data.length > 0) {
+          const countryData = state.data.find(d => d.country.id === countryIso3);
+          if (countryData && countryData.data.length > 0) {
+            const endYearData = countryData.data[countryData.data.length - 1];
+            lineColor = getQuadrantColor(
+              endYearData.x,
+              endYearData.y,
+              state.xScale,
+              state.yScale
+            );
+          }
+        }
+        return {
+          label: countryObj.name,
+          data: filteredData.values,
+          borderColor: lineColor,
+          backgroundColor: lineColor + '33',
+          fill: false,
+          tension: 0.1,
+          flagUrl: `https://flagcdn.com/w80/${countryObj.iso2Code.toLowerCase()}.png`,
+          years: filteredData.years
+        };
+      }));
+      const validDatasets = datasets.filter(d => d !== null);
+      return { chartLabels: validDatasets[0]?.years || [], datasets: validDatasets };
+    }
+    async function updateChartInstance(chartObj, containerId) {
+      const gridSuffix = containerId.replace('chartsContainer', '');
+      const indicator = chartObj.indicatorSelect.value;
+      const data = await getChartDataForIndicator(indicator, gridSuffix);
+      if (!data) return;
+      const selectedInd = indicators.find(ind => ind.value === indicator);
+      chartObj.chart.options.plugins.title.text = selectedInd ? selectedInd.text : "";
+      chartObj.chart.data.labels = data.chartLabels;
+      chartObj.chart.data.datasets = data.datasets;
+      chartObj.chart.options.scales.y.ticks.callback = function (value) {
+        return getFormattedTick(value, indicator);
+      };
+      chartObj.chart.update();
+    }
+    function isQuadrantReady(gridSuffix) {
+      const state = getQuadrantState(gridSuffix);
+      return state.data && state.data.length > 0 && state.xScale && state.yScale;
+    }
+    async function updateAllCharts() {
+      const gridContainer = document.getElementById("chartGridsContainer");
+      const grids = gridContainer.querySelectorAll(".charts-grid");
+      for (const grid of grids) {
+        const gridSuffix = grid.id.replace('grid', '');
+        await loadQuadrantData(gridSuffix);
+        while (!isQuadrantReady(gridSuffix)) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+      }
+      for (const gridId in chartInstances) {
+        const instances = chartInstances[gridId];
+        for (const chartObj of instances) {
+          await updateChartInstance(chartObj, gridId);
+        }
+      }
+    }
+    function getAdjustedFlagPosition(lastDatum, xScale, yScale, width, height) {
+      const flagWidth = 40, flagHeight = 25;
+      const dataXMid = (xScale.domain()[0] + xScale.domain()[1]) / 2;
+      const dataYMid = (yScale.domain()[0] + yScale.domain()[1]) / 2;
+      const xMidScreen = xScale(dataXMid);
+      const yMidScreen = yScale(dataYMid);
+      let quadrantIndex;
+      if (lastDatum.x >= dataXMid && lastDatum.y >= dataYMid) {
+        quadrantIndex = 1;
+      } else if (lastDatum.x < dataXMid && lastDatum.y >= dataYMid) {
+        quadrantIndex = 2;
+      } else if (lastDatum.x < dataXMid && lastDatum.y < dataYMid) {
+        quadrantIndex = 3;
+      } else {
+        quadrantIndex = 4;
+      }
+      let qMinX, qMaxX, qMinY, qMaxY;
+      switch (quadrantIndex) {
+        case 1:
+          qMinX = xMidScreen;
+          qMaxX = width;
+          qMinY = 0;
+          qMaxY = yMidScreen;
+          break;
+        case 2:
+          qMinX = 0;
+          qMaxX = xMidScreen;
+          qMinY = 0;
+          qMaxY = yMidScreen;
+          break;
+        case 3:
+          qMinX = 0;
+          qMaxX = xMidScreen;
+          qMinY = yMidScreen;
+          qMaxY = height;
+          break;
+        case 4:
+          qMinX = xMidScreen;
+          qMaxX = width;
+          qMinY = yMidScreen;
+          qMaxY = height;
+          break;
+      }
+      let desiredX = xScale(lastDatum.x) + 5;
+      let desiredY = yScale(lastDatum.y) - 12;
+      let finalX = Math.min(Math.max(desiredX, qMinX), qMaxX - flagWidth);
+      let finalY = Math.min(Math.max(desiredY, qMinY), qMaxY - flagHeight);
+      return { x: finalX, y: finalY };
+    }
+    async function redrawQuadrantChartInModal(gridSuffix) {
+      const modalSvg = d3.select("#modalQuadrantSvg");
+      modalSvg.selectAll("*").remove();
+      const modalWidth = +modalSvg.attr("width"),
+        modalHeight = +modalSvg.attr("height");
+      const modalMargin = { top: 20, right: 20, bottom: 40, left: 40 };
+      const width = modalWidth - modalMargin.left - modalMargin.right;
+      const height = modalHeight - modalMargin.top - modalMargin.bottom;
+      const g = modalSvg.append("g")
+        .attr("transform", `translate(${modalMargin.left},${modalMargin.top})`);
+      const state = getQuadrantState(gridSuffix);
+      if (!state.data || state.data.length === 0) return;
+      const xIndicator = document.getElementById("modalXIndicatorSelect").value || defaultXIndicator;
+      const yIndicator = document.getElementById("modalYIndicatorSelect").value || defaultYIndicator;
+      const allPoints = state.data.flatMap(d => d.data);
+      const xScale = d3.scaleLinear().domain(d3.extent(allPoints, d => d.x)).nice().range([0, width]);
+      const yScale = d3.scaleLinear().domain(d3.extent(allPoints, d => d.y)).nice().range([height, 0]);
+      const xMid = xScale((xScale.domain()[0] + xScale.domain()[1]) / 2);
+      const yMid = yScale((yScale.domain()[0] + yScale.domain()[1]) / 2);
+      const quadrants = [
+        { x: 0, y: 0, width: xMid, height: yMid, fill: "#FFA500" },
+        { x: xMid, y: 0, width: width - xMid, height: yMid, fill: "#FF0000" },
+        { x: 0, y: yMid, width: xMid, height: height - yMid, fill: "#1E90FF" },
+        { x: xMid, y: yMid, width: width - xMid, height: height - yMid, fill: "#FFA500" }
+      ];
+      quadrants.forEach((quadrant) => {
+        g.append("rect")
+          .attr("x", quadrant.x)
+          .attr("y", quadrant.y)
+          .attr("width", quadrant.width)
+          .attr("height", quadrant.height)
+          .attr("fill", quadrant.fill);
+      });
+      const xAxis = d3.axisBottom(xScale).tickFormat(d => {
+        let formatted = d3.format(".2s")(d);
+        if (indicatorMetadata[xIndicator] && indicatorMetadata[xIndicator].unit === '%') {
+          formatted += '%';
+        }
+        return formatted;
+      });
+      const yAxis = d3.axisLeft(yScale).tickFormat(d => {
+        let formatted = d3.format(".2s")(d);
+        if (indicatorMetadata[yIndicator] && indicatorMetadata[yIndicator].unit === '%') {
+          formatted += '%';
+        }
+        return formatted;
+      });
+      g.append("g")
+        .attr("class", "axis x-axis")
+        .attr("transform", `translate(0,${height})`)
+        .call(xAxis);
+      g.append("g")
+        .attr("class", "axis y-axis")
+        .call(yAxis);
+      g.append("line")
+        .attr("x1", xMid)
+        .attr("x2", xMid)
+        .attr("y1", 0)
+        .attr("y2", height)
+        .attr("stroke", "#ccc")
+        .attr("stroke-dasharray", "4,4");
+      g.append("line")
+        .attr("y1", yMid)
+        .attr("y2", yMid)
+        .attr("x1", 0)
+        .attr("x2", width)
+        .attr("stroke", "#ccc")
+        .attr("stroke-dasharray", "4,4");
+      state.data.forEach(d => {
+        const datum = d.data[d.data.length - 1];
+        if (datum) {
+          g.append("circle")
+            .attr("cx", xScale(datum.x))
+            .attr("cy", yScale(datum.y))
+            .attr("r", 5)
+            .attr("fill", getQuadrantColor(datum.x, datum.y, xScale, yScale));
+          let pos = getAdjustedFlagPosition(datum, xScale, yScale, width, height);
+          appendFlagImage(g, d.country, pos);
+        }
+      });
+    }
+    function openModal(container) {
+      if (container.getAttribute("data-chart-type") === "quadrant") {
+        let gridSuffix = container.id.replace("quadrantLeftContainer", "");
+        currentModalGridSuffix = gridSuffix;
+        const modal = document.getElementById("chartModal");
+        modal.style.display = "block";
+        populateModalDropdowns();
+        const modalContent = modal.querySelector(".modal-content");
+        const newWidth = modalContent.clientWidth * 0.8;
+        const newHeight = modalContent.clientHeight * 0.8;
+        const modalSvg = document.getElementById("modalQuadrantSvg");
+        modalSvg.setAttribute("width", newWidth);
+        modalSvg.setAttribute("height", newHeight);
+        redrawQuadrantChartInModal(gridSuffix);
+      }
+    }
+    function closeModal() {
+      document.getElementById("chartModal").style.display = "none";
+    }
+    document.addEventListener("click", function (e) {
+      if (e.target && e.target.classList.contains("expand-btn")) {
+        let container = e.target.closest(".quadrant-chart");
+        if (container) {
+          openModal(container);
+        }
+      }
+    });
+    window.addEventListener("click", function (e) {
+      const modal = document.getElementById("chartModal");
+      if (e.target === modal) {
+        closeModal();
+      }
+    });
+    function openLineChartModal(chartInstance) {
+      const modal = document.getElementById("lineChartModal");
+      modal.style.display = "block";
+      requestAnimationFrame(() => {
+        const modalContent = modal.querySelector(".modal-content");
+        const canvas = document.getElementById("modalLineChartCanvas");
+        const canvasWidth = modalContent.clientWidth * 0.8;
+        const canvasHeight = modalContent.clientHeight * 0.8;
+        canvas.width = canvasWidth;
+        canvas.height = canvasHeight;
+        const ctx = canvas.getContext("2d");
+        const config = {
+          type: chartInstance.config.type,
+          data: JSON.parse(JSON.stringify(chartInstance.config.data)),
+          options: Object.assign({}, chartInstance.config.options, {
+            responsive: false,
+            maintainAspectRatio: false,
+            animation: false
+          }),
+          plugins: [flagPlugin]
+        };
+        if (canvas.chartInstance) {
+          canvas.chartInstance.destroy();
+        }
+        canvas.chartInstance = new Chart(ctx, config);
+      });
+    }
+    document.getElementById("closeLineChartModal").addEventListener("click", () => {
+      const modal = document.getElementById("lineChartModal");
+      modal.style.display = "none";
+      const modalCanvas = document.getElementById("modalLineChartCanvas");
+      if (modalCanvas.chartInstance) {
+        modalCanvas.chartInstance.destroy();
+        modalCanvas.chartInstance = null;
+      }
+    });
+    window.addEventListener("click", function (e) {
+      const modal = document.getElementById("lineChartModal");
+      if (e.target === modal) {
+        modal.style.display = "none";
+        const modalCanvas = document.getElementById("modalLineChartCanvas");
+        if (modalCanvas.chartInstance) {
+          modalCanvas.chartInstance.destroy();
+          modalCanvas.chartInstance = null;
+        }
+      }
+    });
+    async function createNewChartInstance(defaultIndicator, containerId) {
+      const gridSuffix = containerId.replace('chartsContainer', '');
+      await getChartDataForIndicator(defaultIndicator, gridSuffix);
+      const chartsContainer = document.getElementById(containerId);
+      const chartWrapper = document.createElement("div");
+      chartWrapper.classList.add("line-chart-wrapper");
+      const expandBtn = document.createElement("button");
+      expandBtn.className = "expand-btn";
+      expandBtn.title = "Expand Chart";
+      expandBtn.innerHTML = "⛶";
+      chartWrapper.appendChild(expandBtn);
+      const indicatorSelect = document.createElement("select");
+      indicatorSelect.classList.add("indicatorSelect");
+      indicators.forEach(ind => {
+        const option = document.createElement("option");
+        option.value = ind.value;
+        option.textContent = ind.text;
+        indicatorSelect.appendChild(option);
+      });
+      indicatorSelect.value = defaultIndicator || indicators[0].value;
+      indicatorSelect.addEventListener("change", () => {
+        const instance = chartInstances[containerId].find(obj => obj.indicatorSelect === indicatorSelect);
+        if (instance) {
+          updateChartInstance(instance, containerId);
+          saveState();
+        }
+      });
+      chartWrapper.appendChild(indicatorSelect);
+      const canvas = document.createElement("canvas");
+      canvas.id = `chartCanvas${nextChartId++}`;
+      canvas.classList.add("chart-canvas");
+      chartWrapper.appendChild(canvas);
+      chartsContainer.appendChild(chartWrapper);
+      const ctx = canvas.getContext("2d");
+      const newChart = new Chart(ctx, {
+        type: 'line',
+        data: { labels: [], datasets: [] },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          layout: { padding: { right: 70 } },
+          plugins: { title: { display: false } },
+          scales: {
+            x: { title: { display: true, text: 'Year' } },
+            y: { title: { display: true, text: 'Value' }, ticks: { callback: value => value } }
+          }
+        },
+        plugins: [flagPlugin]
+      });
+      expandBtn.addEventListener("click", () => {
+        openLineChartModal(newChart);
+      });
+      if (!chartInstances[containerId]) chartInstances[containerId] = [];
+      chartInstances[containerId].push({ chart: newChart, indicatorSelect: indicatorSelect });
+    }
+    let quadrantStates = {};
+    function getQuadrantState(gridSuffix) {
+      if (!quadrantStates[gridSuffix]) {
+        quadrantStates[gridSuffix] = {
+          data: [],
+          years: [],
+          currentYearIndex: 0,
+          svgSelection: null,
+          width: 0,
+          height: 0,
+          history: {}
+        };
+      }
+      return quadrantStates[gridSuffix];
+    }
+    function resetQuadrantChart(gridSuffix) {
+      const state = getQuadrantState(gridSuffix);
+      const container = document.getElementById("quadrantChartContainer" + gridSuffix);
+      const containerWidth = container.clientWidth;
+      const containerHeight = container.clientHeight;
+      d3.select("#quadrantChartContainer" + gridSuffix).selectAll("*").remove();
+      state.svgSelection = d3.select("#quadrantChartContainer" + gridSuffix)
+        .append("svg")
+        .attr("width", containerWidth)
+        .attr("height", containerHeight)
+        .append("g")
+        .attr("transform", `translate(${margin.top},${margin.left})`);
+      state.width = containerWidth - margin.left - margin.right;
+      state.height = containerHeight - margin.top - margin.bottom;
+    }
+    function getSelectedQuadrantIndicators(gridSuffix) {
+      const xIndicator = document.getElementById("xIndicatorSelect" + gridSuffix).value;
+      const yIndicator = document.getElementById("yIndicatorSelect" + gridSuffix).value;
+      return { xIndicator, yIndicator };
+    }
+    async function loadQuadrantData(gridSuffix) {
+      resetQuadrantChart(gridSuffix);
+      const state = getQuadrantState(gridSuffix);
+      const selectedCountryIds = window.selectedCountries;
+      if (!selectedCountryIds || selectedCountryIds.length === 0) return;
+      const { xIndicator, yIndicator } = getSelectedQuadrantIndicators(gridSuffix);
+      state.data = [];
+      await Promise.all(selectedCountryIds.map(async countryId => {
+        const countryObj = countriesData.find(c => c.id === countryId) ||
+          { id: countryId, name: countryId, iso2Code: countryId.substring(0, 2).toLowerCase() };
+        const xData = await fetchIndicatorData(countryId, xIndicator);
+        const yData = await fetchIndicatorData(countryId, yIndicator);
+        const xMap = new Map();
+        xData.years.forEach((yr, i) => { xMap.set(yr, xData.values[i]); });
+        const yMap = new Map();
+        yData.years.forEach((yr, i) => { yMap.set(yr, yData.values[i]); });
+        const commonYears = xData.years.filter(yr => yMap.has(yr)).sort((a, b) => a - b);
+        const filteredYears = commonYears.filter(yr => +yr >= yearRange[0] && +yr <= yearRange[1]);
+        const dataPoints = filteredYears.map(yr => ({ year: +yr, x: +xMap.get(yr), y: +yMap.get(yr) }));
+        state.data.push({ country: countryObj, data: dataPoints });
+      }));
+      if (state.data.length > 0) {
+        const allYears = state.data.map(d => d.data.map(p => p.year));
+        state.years = allYears.reduce((acc, curr) => acc.filter(y => curr.includes(y)));
+        state.years.sort((a, b) => a - b);
+      }
+      state.currentYearIndex = state.years.length - 1;
+      state.history = {};
+      drawQuadrantChart(gridSuffix);
+      updateYearMarker(gridSuffix);
+      updateQuadrantChart(gridSuffix);
+    }
+    function drawQuadrantChart(gridSuffix) {
+      const state = getQuadrantState(gridSuffix);
+      const { xIndicator, yIndicator } = getSelectedQuadrantIndicators(gridSuffix);
+      const allPoints = state.data.flatMap(d => d.data);
+      const xScale = d3.scaleLinear()
+        .domain(d3.extent(allPoints, d => d.x)).nice()
+        .range([0, state.width]);
+      const yScale = d3.scaleLinear()
+        .domain(d3.extent(allPoints, d => d.y)).nice()
+        .range([state.height, 0]);
+      state.xScale = xScale;
+      state.yScale = yScale;
+      const xMid = xScale((xScale.domain()[0] + xScale.domain()[1]) / 2);
+      const yMid = yScale((yScale.domain()[0] + yScale.domain()[1]) / 2);
+      const quadrants = [
+        { x: 0, y: 0, width: xMid, height: yMid, fill: "#FFA500" },
+        { x: xMid, y: 0, width: state.width - xMid, height: yMid, fill: "#FF0000" },
+        { x: 0, y: yMid, width: xMid, height: state.height - yMid, fill: "#1E90FF" },
+        { x: xMid, y: yMid, width: state.width - xMid, height: state.height - yMid, fill: "#FFA500" }
+      ];
+      quadrants.forEach((quadrant) => {
+        state.svgSelection.insert("rect", ":first-child")
+          .attr("x", quadrant.x)
+          .attr("y", quadrant.y)
+          .attr("width", quadrant.width)
+          .attr("height", quadrant.height)
+          .attr("fill", quadrant.fill);
+      });
+      state.svgSelection.append("g")
+        .attr("class", "axis x-axis")
+        .attr("transform", `translate(0,${state.height})`)
+        .call(d3.axisBottom(xScale).tickFormat(d => {
+          let formatted = d3.format(".2s")(d);
+          if (indicatorMetadata[xIndicator] && indicatorMetadata[xIndicator].unit === '%') {
+            formatted += '%';
+          }
+          return formatted;
+        }));
+      state.svgSelection.append("g")
+        .attr("class", "axis y-axis")
+        .call(d3.axisLeft(yScale).tickFormat(d => {
+          let formatted = d3.format(".2s")(d);
+          if (indicatorMetadata[yIndicator] && indicatorMetadata[yIndicator].unit === '%') {
+            formatted += '%';
+          }
+          return formatted;
+        }));
+      state.svgSelection.append("line")
+        .attr("x1", xScale((xScale.domain()[0] + xScale.domain()[1]) / 2))
+        .attr("x2", xScale((xScale.domain()[0] + xScale.domain()[1]) / 2))
+        .attr("y1", 0)
+        .attr("y2", state.height)
+        .attr("stroke", "#ccc")
+        .attr("stroke-dasharray", "4,4");
+      state.svgSelection.append("line")
+        .attr("y1", yScale((yScale.domain()[0] + yScale.domain()[1]) / 2))
+        .attr("y2", yScale((yScale.domain()[0] + yScale.domain()[1]) / 2))
+        .attr("x1", 0)
+        .attr("x2", state.width)
+        .attr("stroke", "#ccc")
+        .attr("stroke-dasharray", "4,4");
+      state.data.forEach(d => {
+        state.history[d.country.id] = [];
+        const g = state.svgSelection.append("g")
+          .attr("class", "country-group")
+          .attr("id", "group-" + d.country.id + gridSuffix);
+        g.append("path")
+          .attr("class", "country-path")
+          .attr("id", "path-" + d.country.id + gridSuffix)
+          .attr("fill", "none")
+          .attr("stroke", getRandomColor(1))
+          .attr("stroke-width", 2);
+        g.append("circle")
+          .attr("class", "country-circle")
+          .attr("id", "circle-" + d.country.id + gridSuffix)
+          .attr("r", 5)
+          .attr("fill", getRandomColor(1));
+      });
+    }
+    function updateQuadrantChart(gridSuffix) {
+      const state = getQuadrantState(gridSuffix);
+      if (state.currentYearIndex >= state.years.length) return;
+      const year = state.years[state.currentYearIndex];
+      const { xIndicator, yIndicator } = getSelectedQuadrantIndicators(gridSuffix);
+      state.data.forEach(d => {
+        const datum = d.data.find(p => p.year === year);
+        if (datum) {
+          state.history[d.country.id].push(datum);
+          const circleSelection = d3.select("#circle-" + d.country.id + gridSuffix);
+          circleSelection
+            .on("mouseover", function (event) {
+              d3.select("#tooltip").style("opacity", 1)
+                .html(`Year: ${datum.year}<br>${xIndicator}: ${datum.x}<br>${yIndicator}: ${datum.y}`);
+            })
+            .on("mousemove", function (event) {
+              d3.select("#tooltip").style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY + 10) + "px");
+            })
+            .on("mouseout", function () {
+              d3.select("#tooltip").style("opacity", 0);
+            })
+            .transition()
+            .duration(500)
+            .attr("cx", state.xScale(datum.x))
+            .attr("cy", state.yScale(datum.y))
+            .attr("fill", getQuadrantColor(datum.x, datum.y, state.xScale, state.yScale))
+            .on("end", function () {
+              d3.select(this.parentNode).select("image").remove();
+              let pos = getAdjustedFlagPosition(datum, state.xScale, state.yScale, state.width, state.height);
+              appendFlagImage(d3.select(this.parentNode), d.country, pos);
+            });
+          const lineGenerator = d3.line()
+            .x(d => state.xScale(d.x))
+            .y(d => state.yScale(d.y));
+          d3.select("#path-" + d.country.id + gridSuffix)
+            .attr("d", lineGenerator(state.history[d.country.id]));
+        }
+      });
+      updateYearMarker(gridSuffix);
+    }
+    function updateYearMarker(gridSuffix) {
+      const state = getQuadrantState(gridSuffix);
+      if (state.years.length === 0) return;
+      const year = state.currentYearIndex < state.years.length ? state.years[state.currentYearIndex] : state.years[state.years.length - 1];
+      const marker = document.getElementById("yearMarker" + gridSuffix);
+      if (!marker) {
+        console.warn("yearMarker element for gridSuffix", gridSuffix, "not found.");
+        return;
+      }
+      marker.textContent = year;
+      const scaleContainer = document.getElementById("quadrantYearScale" + gridSuffix);
+      if (!scaleContainer) return;
+      const containerWidth = scaleContainer.clientWidth;
+      const markerWidth = marker.clientWidth;
+      const minYear = state.years[0];
+      const maxYear = state.years[state.years.length - 1];
+      const pos = ((year - minYear) / (maxYear - minYear)) * (containerWidth - markerWidth);
+      marker.style.left = pos + "px";
+    }
+    function updateModalQuadrantChart() {
+      const gridSuffix = currentModalGridSuffix;
+      const state = getQuadrantState(gridSuffix);
+      if (state.currentYearIndex >= state.years.length) return;
+      const year = state.years[state.currentYearIndex];
+      const { xIndicator, yIndicator } = getSelectedQuadrantIndicators(gridSuffix);
+      document.getElementById("modalYearMarker").textContent = "Year: " + year;
+      state.data.forEach(d => {
+        const datum = d.data.find(p => p.year === year);
+        if (datum) {
+          state.history[d.country.id] = state.history[d.country.id] || [];
+          state.history[d.country.id].push(datum);
+        }
+      });
+      const modalSvg = d3.select("#modalQuadrantSvg");
+      modalSvg.selectAll("*").remove();
+      const modalWidth = +modalSvg.attr("width");
+      const modalHeight = +modalSvg.attr("height");
+      const modalMargin = { top: 20, right: 20, bottom: 40, left: 40 };
+      const width = modalWidth - modalMargin.left - modalMargin.right;
+      const height = modalHeight - modalMargin.top - modalMargin.bottom;
+      const g = modalSvg.append("g")
+        .attr("transform", `translate(${modalMargin.left},${modalMargin.top})`);
+      const allPoints = state.data.flatMap(d => d.data);
+      const xScale = d3.scaleLinear().domain(d3.extent(allPoints, d => d.x)).nice().range([0, width]);
+      const yScale = d3.scaleLinear().domain(d3.extent(allPoints, d => d.y)).nice().range([height, 0]);
+      const xMid = xScale((xScale.domain()[0] + xScale.domain()[1]) / 2);
+      const yMid = yScale((yScale.domain()[0] + yScale.domain()[1]) / 2);
+      [
+        { x: 0, y: 0, width: xMid, height: yMid, fill: "#FFA500" },
+        { x: xMid, y: 0, width: width - xMid, height: yMid, fill: "#FF0000" },
+        { x: 0, y: yMid, width: xMid, height: height - yMid, fill: "#1E90FF" },
+        { x: xMid, y: yMid, width: width - xMid, height: height - yMid, fill: "#FFA500" }
+      ].forEach((q) => {
+        g.append("rect")
+          .attr("x", q.x)
+          .attr("y", q.y)
+          .attr("width", q.width)
+          .attr("height", q.height)
+          .attr("fill", q.fill)
+      });
+      g.append("line")
+        .attr("x1", xMid)
+        .attr("x2", xMid)
+        .attr("y1", 0)
+        .attr("y2", height)
+        .attr("stroke", "#ccc")
+        .attr("stroke-dasharray", "4,4");
+      g.append("line")
+        .attr("y1", yMid)
+        .attr("y2", yMid)
+        .attr("x1", 0)
+        .attr("x2", width)
+        .attr("stroke", "#ccc")
+        .attr("stroke-dasharray", "4,4");
+      state.data.forEach(d => {
+        const history = state.history[d.country.id];
+        if (!history || history.length === 0) return;
+        const lastDatum = history[history.length - 1];
+        let circle = g.select(`circle[data-country='${d.country.id}']`);
+        if (circle.empty()) {
+          circle = g.append("circle")
+            .attr("data-country", d.country.id)
+            .attr("r", 5)
+            .attr("cx", xScale(lastDatum.x))
+            .attr("cy", yScale(lastDatum.y))
+            .attr("fill", getQuadrantColor(lastDatum.x, lastDatum.y, xScale, yScale));
+          let pos = getAdjustedFlagPosition(lastDatum, xScale, yScale, width, height);
+          appendFlagImage(g, d.country, pos);
+        } else {
+          circle.transition()
+            .duration(500)
+            .attr("cx", xScale(lastDatum.x))
+            .attr("cy", yScale(lastDatum.y))
+            .attr("fill", getQuadrantColor(lastDatum.x, lastDatum.y, xScale, yScale))
+            .on("end", function () {
+              g.select(`image[data-country='${d.country.id}']`).remove();
+              let pos = getAdjustedFlagPosition(lastDatum, xScale, yScale, width, height);
+              appendFlagImage(g, d.country, pos);
+            });
+        }
+        const lineGenerator = d3.line()
+          .x(d => xScale(d.x))
+          .y(d => yScale(d.y));
+        let path = g.select(`path[data-country='${d.country.id}']`);
+        if (path.empty()) {
+          path = g.append("path")
+            .attr("data-country", d.country.id)
+            .attr("fill", "none")
+            .attr("stroke", getRandomColor(1))
+            .attr("stroke-width", 2);
+        }
+        path.attr("d", lineGenerator(history));
+      });
+    }
+    function playQuadrantChart(gridSuffix) {
+      const state = getQuadrantState(gridSuffix);
+      state.currentYearIndex = 0;
+      state.data.forEach(d => {
+        state.history[d.country.id] = [];
+        d3.select("#path-" + d.country.id + gridSuffix).attr("d", null);
+        d3.select("#circle-" + d.country.id + gridSuffix)
+          .attr("cx", null)
+          .attr("cy", null);
+        d3.select("#group-" + d.country.id + gridSuffix).selectAll("image").remove();
+      });
+      updateYearMarker(gridSuffix);
+      const interval = d3.interval(() => {
+        if (state.currentYearIndex >= state.years.length) {
+          interval.stop();
+          return;
+        }
+        updateQuadrantChart(gridSuffix);
+        state.currentYearIndex++;
+      }, 500);
+    }
+    function playModalQuadrantChart() {
+      const gridSuffix = currentModalGridSuffix;
+      const state = getQuadrantState(gridSuffix);
+      state.currentYearIndex = 0;
+      state.data.forEach(d => {
+        state.history[d.country.id] = [];
+      });
+      const interval = d3.interval(() => {
+        if (state.currentYearIndex >= state.years.length) {
+          interval.stop();
+          return;
+        }
+        updateModalQuadrantChart();
+        state.currentYearIndex++;
+      }, 500);
+    }
+    document.getElementById("modalQuadrantPlayButton").addEventListener("click", playModalQuadrantChart);
+    async function createNewChartGrid() {
+      const gridContainer = document.getElementById("chartGridsContainer");
+      const gridCount = gridContainer.querySelectorAll('.charts-grid').length + 1;
+      const newGrid = document.createElement("div");
+      newGrid.className = "charts-grid";
+      newGrid.id = `grid${gridCount}`;
+      const quadrantDiv = document.createElement("div");
+      quadrantDiv.className = "quadrant-chart";
+      quadrantDiv.setAttribute("data-chart-type", "quadrant");
+      quadrantDiv.id = `quadrantLeftContainer${gridCount}`;
+      quadrantDiv.innerHTML = `
+        <button class="expand-btn" title="Expand Chart">⛶</button>
+        <div id="quadrantDropdownContainer${gridCount}">
+          <div>
+            <label for="xIndicatorSelect${gridCount}">X-Axis Indicator:</label>
+            <select id="xIndicatorSelect${gridCount}"></select>
+          </div>
+          <div>
+            <label for="yIndicatorSelect${gridCount}">Y-Axis Indicator:</label>
+            <select id="yIndicatorSelect${gridCount}"></select>
+          </div>
+        </div>
+        <div id="quadrantChartContainer${gridCount}" class="quadrant-chart-container" style="height:60vh;"></div>
         <div id="quadrantControlContainer${gridCount}">
           <button id="quadrantPlayButton${gridCount}">&#9658;</button>
           <div id="quadrantYearScale${gridCount}">
@@ -1222,143 +1519,634 @@
           </div>
         </div>
       `;
-            const lineChartsDiv = document.createElement("div");
-            lineChartsDiv.className = "line-charts";
-            lineChartsDiv.id = `chartsContainer${gridCount}`;
-            lineChartsDiv.innerHTML = `<!-- Line charts will be dynamically added here -->`;
-            newGrid.appendChild(quadrantDiv);
-            newGrid.appendChild(lineChartsDiv);
-            gridContainer.appendChild(newGrid);
-            populateQuadrantIndicatorDropdownsForGrid(gridCount);
-            document.getElementById("quadrantPlayButton" + gridCount).addEventListener("click", () => {
-                playQuadrantChart(gridCount);
+      const lineChartsDiv = document.createElement("div");
+      lineChartsDiv.className = "line-charts";
+      lineChartsDiv.id = `chartsContainer${gridCount}`;
+      lineChartsDiv.innerHTML = `<!-- Line charts will be dynamically added here -->`;
+      newGrid.appendChild(quadrantDiv);
+      newGrid.appendChild(lineChartsDiv);
+      gridContainer.appendChild(newGrid);
+      populateQuadrantIndicatorDropdownsForGrid(gridCount);
+      document.getElementById("quadrantPlayButton" + gridCount).addEventListener("click", () => {
+        playQuadrantChart(gridCount);
+      });
+      createNewChartInstance(defaultXIndicator, `chartsContainer${gridCount}`);
+      createNewChartInstance(defaultYIndicator, `chartsContainer${gridCount}`);
+      await loadQuadrantData(gridCount);
+      saveState();
+    }
+    document.getElementById("addChartBtn").addEventListener("click", () => {
+      createNewChartGrid();
+      updateAllCharts();
+    });
+    function showSpinner() {
+      document.getElementById("spinnerOverlay").style.display = "flex";
+    }
+    function hideSpinner() {
+      document.getElementById("spinnerOverlay").style.display = "none";
+    }
+    function restoreLineChartIndicators(savedGrids) {
+      for (const gridSuffix in savedGrids) {
+        const gridState = savedGrids[gridSuffix];
+        if (gridState.lineChartIndicators) {
+          const chartsContainer = document.getElementById("chartsContainer" + gridSuffix);
+          if (chartsContainer) {
+            const selects = chartsContainer.querySelectorAll(".indicatorSelect");
+            selects.forEach((sel, index) => {
+              if (gridState.lineChartIndicators[index]) {
+                sel.value = gridState.lineChartIndicators[index];
+              }
             });
-            createNewChartInstance(defaultXIndicator, `chartsContainer${gridCount}`);
-            createNewChartInstance(defaultYIndicator, `chartsContainer${gridCount}`);
-            loadQuadrantData(gridCount);
+          }
         }
-        document.getElementById("addChartBtn").addEventListener("click", () => {
-            createNewChartGrid();
-            updateAllCharts();
-        });
-        function showSpinner() {
-            document.getElementById("spinnerOverlay").style.display = "flex";
+      }
+    }
+    document.addEventListener("DOMContentLoaded", async () => {
+      showSpinner();
+
+      // Initially load state (if any) so that year range and selected countries are set.
+      loadState();
+
+      // Determine how many grids were saved.
+      const savedStateStr = localStorage.getItem('dashboardState');
+      let savedGridsCount = 1;
+      if (savedStateStr) {
+        const stateObj = JSON.parse(savedStateStr);
+        if (stateObj.grids) {
+          savedGridsCount = Object.keys(stateObj.grids).length;
         }
+      }
 
-        function hideSpinner() {
-            document.getElementById("spinnerOverlay").style.display = "none";
+      // Create additional grids if needed.
+      const gridContainer = document.getElementById("chartGridsContainer");
+      const currentGrids = gridContainer.querySelectorAll(".charts-grid").length;
+      for (let i = currentGrids + 1; i <= savedGridsCount; i++) {
+        await createNewChartGrid();
+      }
+
+      // Now that all grids exist, restore grid-specific settings.
+      loadState();
+
+      // Continue with initialization:
+      populateQuadrantIndicatorDropdownsForGrid(1);
+      document.getElementById("quadrantPlayButton1").addEventListener("click", () => {
+        playQuadrantChart(1);
+      });
+      createNewChartInstance(defaultXIndicator, "chartsContainer1");
+      createNewChartInstance(defaultYIndicator, "chartsContainer1");
+      await loadQuadrantData(1);
+      updateQuadrantChart(1);
+      await updateAllCharts();
+
+      setTimeout(() => {
+        updateAllCharts();
+        hideSpinner();
+      }, 1000);
+    });
+    function populateQuadrantIndicatorDropdownsForGrid(gridSuffix) {
+      const xSelect = document.getElementById("xIndicatorSelect" + gridSuffix);
+      const ySelect = document.getElementById("yIndicatorSelect" + gridSuffix);
+      indicators.forEach(ind => {
+        const optX = document.createElement("option");
+        optX.value = ind.value;
+        optX.textContent = ind.text;
+        xSelect.appendChild(optX);
+        const optY = document.createElement("option");
+        optY.value = ind.value;
+        optY.textContent = ind.text;
+        ySelect.appendChild(optY);
+      });
+      xSelect.value = defaultXIndicator;
+      ySelect.value = defaultYIndicator;
+      xSelect.addEventListener("change", () => {
+        loadQuadrantData(gridSuffix);
+        updateAllCharts();
+        saveState();
+      });
+      ySelect.addEventListener("change", () => {
+        loadQuadrantData(gridSuffix);
+        updateAllCharts();
+        saveState();
+      });
+    }
+    function populateModalDropdowns() {
+      const modalXSelect = document.getElementById("modalXIndicatorSelect");
+      const modalYSelect = document.getElementById("modalYIndicatorSelect");
+      modalXSelect.innerHTML = '';
+      modalYSelect.innerHTML = '';
+      indicators.forEach(ind => {
+        const optX = document.createElement("option");
+        optX.value = ind.value;
+        optX.textContent = ind.text;
+        modalXSelect.appendChild(optX);
+        const optY = document.createElement("option");
+        optY.value = ind.value;
+        optY.textContent = ind.text;
+        modalYSelect.appendChild(optY);
+      });
+      modalXSelect.value = defaultXIndicator;
+      modalYSelect.value = defaultYIndicator;
+      modalXSelect.addEventListener("change", () => {
+        redrawQuadrantChartInModal(currentModalGridSuffix);
+      });
+      modalYSelect.addEventListener("change", () => {
+        redrawQuadrantChartInModal(currentModalGridSuffix);
+      });
+    }
+  </script>
+  <script>
+    const yearSlider = document.getElementById("yearSlider");
+    noUiSlider.create(yearSlider, {
+      start: yearRange,
+      connect: true,
+      step: 1,
+      range: { min: 1960, max: 2023 },
+      format: { to: value => Math.round(value), from: value => Number(value) }
+    });
+    yearSlider.noUiSlider.on('update', function (values) {
+      yearRange = values.map(Number);
+      document.getElementById("yearRangeDisplay").textContent = "Selected Years: " + yearRange[0] + " - " + yearRange[1];
+    });
+    yearSlider.noUiSlider.on('change', function () {
+      updateAllCharts();
+      saveState();
+    });
+  </script>
+  <script>
+    function saveState() {
+      const state = {
+        filters: {
+          // Save the year slider value as an array (e.g. [2010, 2021])
+          yearRange: yearSlider.noUiSlider.get(),
+          // Save the selected countries (from the Vue component)
+          selectedCountries: window.selectedCountries
+          // Add additional filter settings here if needed
+        },
+        grids: {}
+      };
+
+      // Save settings for each chart grid (quadrant indicators and line chart indicators)
+      const gridElements = document.querySelectorAll(".charts-grid");
+      gridElements.forEach(grid => {
+        const gridSuffix = grid.id.replace('grid', '');
+        const quadrantIndicators = {
+          xIndicator: document.getElementById("xIndicatorSelect" + gridSuffix).value,
+          yIndicator: document.getElementById("yIndicatorSelect" + gridSuffix).value
+        };
+        const chartsContainer = document.getElementById("chartsContainer" + gridSuffix);
+        const lineChartIndicators = [];
+        if (chartsContainer) {
+          const selects = chartsContainer.querySelectorAll(".indicatorSelect");
+          selects.forEach(sel => {
+            lineChartIndicators.push(sel.value);
+          });
         }
+        state.grids[gridSuffix] = {
+          quadrantIndicators,
+          lineChartIndicators
+        };
+      });
+      localStorage.setItem('dashboardState', JSON.stringify(state));
+    }
 
-        document.addEventListener("DOMContentLoaded", async () => {
-            // Show the spinner while loading
-            showSpinner();
+    // Updated loadState function
+    function loadState() {
+      const stateStr = localStorage.getItem('dashboardState');
+      if (!stateStr) return;
+      const state = JSON.parse(stateStr);
 
-            populateQuadrantIndicatorDropdownsForGrid(1);
-            document.getElementById("quadrantPlayButton1").addEventListener("click", () => {
-                playQuadrantChart(1);
+      // Restore filters
+      if (state.filters) {
+        if (state.filters.yearRange) {
+          yearSlider.noUiSlider.set(state.filters.yearRange);
+          document.getElementById("yearRangeDisplay").textContent =
+            "Selected Years: " + state.filters.yearRange[0] + " - " + state.filters.yearRange[1];
+        }
+        if (state.filters.selectedCountries) {
+          window.selectedCountries = state.filters.selectedCountries;
+          if (window.vueCountrySelectVm) {
+            window.vueCountrySelectVm.value = state.filters.selectedCountries;
+          }
+        }
+        // Restore additional filters here as needed.
+      }
+
+      // Restore grid-specific settings (quadrant and line chart indicators)
+      if (state.grids) {
+        for (const gridSuffix in state.grids) {
+          const gridState = state.grids[gridSuffix];
+          const xSelect = document.getElementById("xIndicatorSelect" + gridSuffix);
+          const ySelect = document.getElementById("yIndicatorSelect" + gridSuffix);
+          if (xSelect && ySelect && gridState.quadrantIndicators) {
+            xSelect.value = gridState.quadrantIndicators.xIndicator;
+            ySelect.value = gridState.quadrantIndicators.yIndicator;
+          }
+          const chartsContainer = document.getElementById("chartsContainer" + gridSuffix);
+          if (chartsContainer && gridState.lineChartIndicators) {
+            const selects = chartsContainer.querySelectorAll(".indicatorSelect");
+            selects.forEach((sel, index) => {
+              if (gridState.lineChartIndicators[index]) {
+                sel.value = gridState.lineChartIndicators[index];
+              }
             });
-            createNewChartInstance(defaultXIndicator, "chartsContainer1");
-            createNewChartInstance(defaultYIndicator, "chartsContainer1");
-            await loadQuadrantData(1);
-            updateQuadrantChart(1);
-            await updateAllCharts();
-            // Additional update after 500ms
-            setTimeout(() => {
-                updateAllCharts();
-                // Hide the spinner once all the charts have been updated
-                hideSpinner();
-            }, 1000);
-        });
-    </script>
-
-    <!-- Initialize the noUiSlider for Year Range Selection -->
-    <script>
-        const yearSlider = document.getElementById("yearSlider");
-        noUiSlider.create(yearSlider, {
-            start: yearRange,
-            connect: true,
-            step: 1,
-            range: {
-                min: 1960,
-                max: 2023
-            },
-            format: {
-                to: value => Math.round(value),
-                from: value => Number(value)
+          }
+        }
+      }
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+      loadState();
+    });
+  </script>
+  <script>
+    Vue.component('treeselect', VueTreeselect.Treeselect);
+    new Vue({
+      el: '#vueCountrySelectContainer',
+      data: { value: [], options: [], regionMapping: {} },
+      watch: {
+        async value(newVal) {
+          let selectedIds = [];
+          newVal.forEach(val => {
+            if (countriesData.find(country => country.id === val)) {
+              selectedIds.push(val);
+            } else if (this.regionMapping[val]) {
+              selectedIds = selectedIds.concat(this.regionMapping[val].map(country => country.id));
             }
-        });
-        yearSlider.noUiSlider.on('update', function (values) {
-            yearRange = values.map(Number);
-            document.getElementById("yearRangeDisplay").textContent = "Selected Years: " + yearRange[0] + " - " + yearRange[1];
-        });
-        yearSlider.noUiSlider.on('change', function () {
+          });
+          window.selectedCountries = selectedIds;
+          saveState();
+          const gridContainer = document.getElementById("chartGridsContainer");
+          const grids = gridContainer.querySelectorAll(".charts-grid");
+          for (const grid of grids) {
+            const gridSuffix = grid.id.replace('grid', '');
+            await loadQuadrantData(gridSuffix);
+          }
+          await updateAllCharts();
+        }
+      },
+      created() {
+        // Check if a saved state already exists to avoid overwriting with defaults.
+        const stateStr = localStorage.getItem('dashboardState');
+        let savedCountries = [];
+        if (stateStr) {
+          try {
+            const stateObj = JSON.parse(stateStr);
+            if (stateObj.filters && stateObj.filters.selectedCountries) {
+              savedCountries = stateObj.filters.selectedCountries;
+            }
+          } catch (e) {
+            console.error("Error parsing saved state:", e);
+          }
+        }
+        fetch("{{ url_for('static', filename='countries.json') }}")
+          .then(response => response.json())
+          .then(countries => {
+            countriesData = countries;
+            const regionsMap = {};
+            countries.forEach(country => {
+              let regionName = country.region.value.trim();
+              if (!regionName) return;
+              if (!regionsMap[regionName]) {
+                regionsMap[regionName] = [];
+              }
+              regionsMap[regionName].push({ id: country.id, label: country.name });
+            });
+            this.regionMapping = regionsMap;
+            this.options = Object.keys(regionsMap).map(region => ({
+              id: region,
+              label: region,
+              children: regionsMap[region]
+            }));
+            if (savedCountries.length > 0) {
+              this.value = savedCountries;
+              window.selectedCountries = savedCountries;
+            } else {
+              this.value = ["USA", "CHN", "DEU", "IND"];
+              window.selectedCountries = this.value;
+              saveState();
+            }
             updateAllCharts();
+          })
+          .catch(error => { console.error("Error loading countries.json:", error); });
+      },
+      mounted() {
+        window.vueCountrySelectVm = this;
+      }
+    });
+  </script>
+  <script>
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        const gridContainer = document.getElementById("chartGridsContainer");
+        const grids = gridContainer.querySelectorAll(".charts-grid");
+        grids.forEach((grid) => {
+          const gridSuffix = grid.id.replace('grid', '');
+          resetQuadrantChart(gridSuffix);
+          loadQuadrantData(gridSuffix);
         });
-    </script>
-
-    <!-- Vue Treeselect Instance for Country Selection -->
-    <script>
-        Vue.component('treeselect', VueTreeselect.Treeselect);
-        new Vue({
-            el: '#vueCountrySelectContainer',
-            data: {
-                value: [],
-                options: [],
-                regionMapping: {}
-            },
-            watch: {
-                async value(newVal) {
-                    let selectedIds = [];
-                    newVal.forEach(val => {
-                        if (countriesData.find(country => country.id === val)) {
-                            selectedIds.push(val);
-                        } else if (this.regionMapping[val]) {
-                            selectedIds = selectedIds.concat(this.regionMapping[val].map(country => country.id));
-                        }
-                    });
-                    window.selectedCountries = selectedIds;
-                    const gridContainer = document.getElementById("chartGridsContainer");
-                    const grids = gridContainer.querySelectorAll(".charts-grid");
-                    for (const grid of grids) {
-                        const gridSuffix = grid.id.replace('grid', '');
-                        await loadQuadrantData(gridSuffix);
-                    }
-                    await updateAllCharts();
-                }
-            },
-            created() {
-                fetch("{{ url_for('static', filename='countries.json') }}")
-                    .then(response => response.json())
-                    .then(countries => {
-                        countriesData = countries;
-                        const regionsMap = {};
-                        countries.forEach(country => {
-                            let regionName = country.region.value.trim();
-                            if (!regionName) return;
-                            if (!regionsMap[regionName]) {
-                                regionsMap[regionName] = [];
-                            }
-                            regionsMap[regionName].push({
-                                id: country.id,
-                                label: country.name
-                            });
-                        });
-                        this.regionMapping = regionsMap;
-                        this.options = Object.keys(regionsMap).map(region => ({
-                            id: region,
-                            label: region,
-                            children: regionsMap[region]
-                        }));
-                        this.value = ["USA", "CHN", "DEU", "IND"];
-                        window.selectedCountries = this.value;
-                        updateAllCharts();
-                    })
-                    .catch(error => {
-                        console.error("Error loading countries.json:", error);
-                    });
+        for (const gridId in chartInstances) {
+          const instances = chartInstances[gridId];
+          instances.forEach(instance => {
+            if (instance.chart) {
+              instance.chart.resize();
+              instance.chart.update();
             }
+          });
+        }
+      }, 300);
+    });
+  </script>
+
+  <!-- Presentation Creation Integration -->
+  <script>
+    // Function to generate a description (calls backend endpoint)
+    async function generateDescription(promptText) {
+      try {
+        const response = await fetch("/api/groq_description", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ promptText })
         });
-    </script>
+        if (!response.ok) {
+          return "Based on the data, there is some super interesting economic data visible and these countries will be affected by it.";
+        }
+        const data = await response.json();
+        return data.description || "Based on the data, there is some super interesting economic data visible and these countries will be affected by it.";
+      } catch (err) {
+        console.error("Error calling description endpoint:", err);
+        return "Based on the data, there is some super interesting economic data visible and these countries will be affected by it.";
+      }
+    }
+    async function svgToDataUrl(svgElement) {
+      // Serialize the SVG element to a string.
+      const serializer = new XMLSerializer();
+      const svgString = serializer.serializeToString(svgElement);
+
+      // Create a Blob from the SVG string.
+      const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+
+      // Create an Image and load the blob URL.
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      return new Promise((resolve, reject) => {
+        img.onload = function () {
+          // Create a canvas with dimensions matching the SVG.
+          const canvas = document.createElement('canvas');
+          canvas.width = svgElement.clientWidth || svgElement.getBoundingClientRect().width;
+          canvas.height = svgElement.clientHeight || svgElement.getBoundingClientRect().height;
+          const ctx = canvas.getContext('2d');
+
+          // Draw the SVG image onto the canvas.
+          ctx.drawImage(img, 0, 0);
+          URL.revokeObjectURL(url);
+          // Return the PNG image as a data URL.
+          resolve(canvas.toDataURL('image/png'));
+        };
+        img.onerror = function (e) {
+          reject(e);
+        };
+        img.src = url;
+      });
+    }
+    // Updated createPresentation function that captures both Chart.js (line) charts and D3 quadrant charts.
+    async function generateDescription(promptText) {
+      try {
+        const response = await fetch("/api/groq_description", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ promptText })
+        });
+        if (!response.ok) {
+          return "There is some noteworthy economic trend observed in the data.";
+        }
+        const data = await response.json();
+        return data.description || "There is some noteworthy economic trend observed in the data.";
+      } catch (err) {
+        console.error("Error calling description endpoint:", err);
+        return "There is some noteworthy economic trend observed in the data.";
+      }
+    }
+    // Updated createPresentation function with a professional slide master and consistent layout
+    async function createPresentation() {
+      // Helper function: convert pixels to inches (assuming 96px = 1 inch)
+      function pxToInches(px) {
+        return px / 96;
+      }
+
+      // Create a new presentation and define a slide master
+      let pres = new PptxGenJS();
+      pres.defineSlideMaster({
+        title: "MASTER_SLIDE",
+        background: { fill: "1f1f1f" },
+        objects: [
+          { rect: { x: 0, y: 0, w: "100%", h: 0.6, fill: { color: "323232" } } },
+          { rect: { x: 0, y: "7.0", w: "100%", h: 0.4, fill: { color: "323232" } } }
+        ],
+        slideNumber: { x: 9.0, y: "7.1", color: "FFFFFF" }
+      });
+
+      // 1. Title Slide
+      let titleSlide = pres.addSlide({ masterName: "MASTER_SLIDE" });
+      titleSlide.addText("Dashboard Presentation", {
+        x: 0.3,
+        y: 0.25,
+        w: 9,
+        fontSize: 32,
+        bold: true,
+        color: "FFFFFF"
+      });
+      titleSlide.addText("A Professional Overview of the Data", {
+        x: 0.3,
+        y: 1,
+        w: 9,
+        fontSize: 20,
+        color: "FFFFFF"
+      });
+
+      // 2. Loop over each grid to add slides in the desired order
+      const gridContainer = document.getElementById("chartGridsContainer");
+      // Assume each grid has a class 'charts-grid'
+      const grids = gridContainer.querySelectorAll(".charts-grid");
+
+      for (const grid of grids) {
+        // Extract grid suffix (e.g., '1' from id "grid1")
+        const gridSuffix = grid.id.replace("grid", "");
+
+        // ------------------------
+        // Quadrant Chart Slide
+        // ------------------------
+        const quadrantContainer = document.getElementById("quadrantChartContainer" + gridSuffix);
+        try {
+          // Capture quadrant chart using html2canvas
+          const canvas = await html2canvas(quadrantContainer, {
+            scale: window.devicePixelRatio * 2,
+            useCORS: true,
+            allowTaint: false
+          });
+          const quadrantImageData = canvas.toDataURL("image/png");
+
+          // Get the indicator texts from the dropdowns
+          const xSelect = document.getElementById("xIndicatorSelect" + gridSuffix);
+          const ySelect = document.getElementById("yIndicatorSelect" + gridSuffix);
+          const xIndicatorText = xSelect ? xSelect.options[xSelect.selectedIndex].text : "X-Axis Indicator";
+          const yIndicatorText = ySelect ? ySelect.options[ySelect.selectedIndex].text : "Y-Axis Indicator";
+          const chartTitle = `${xIndicatorText} vs ${yIndicatorText}`;
+
+          // Optionally, generate a description (using your generateDescription function)
+          const promptText = `Provide a concise description for a quadrant chart showing ${xIndicatorText} vs ${yIndicatorText} trends.`;
+          const description = await generateDescription(promptText);
+
+          // Create the quadrant slide
+          let quadSlide = pres.addSlide({ masterName: "MASTER_SLIDE" });
+          quadSlide.addText(chartTitle, {
+            x: 0.3,
+            y: 0.25,
+            w: 9,
+            fontSize: 24,
+            bold: true,
+            color: "FFFFFF"
+          });
+
+          // Add X and Y axis indicator texts on the slide
+          quadSlide.addText(`X-Axis: ${xIndicatorText}`, {
+            x: 0.55,
+            y: 5.1,
+            w: 9,
+            fontSize: 16,
+            color: "FFFFFF"
+          });
+          quadSlide.addText(`Y-Axis: ${yIndicatorText}`, {
+            x: -4.25,
+            y: 0.3,
+            w: 9,
+            fontSize: 16,
+            color: "FFFFFF",
+            rotate: -90  // Rotate the text 90 degrees to the left
+          });
+          // Add the quadrant chart image
+          quadSlide.addImage({
+            data: quadrantImageData,
+            x: 0.5,
+            y: 1.5,
+            w: 4.5,
+            h: 3.5,
+            sizing: { type: "contain", w: 4.5, h: 3.5 }
+          });
+
+          // Add the description
+          quadSlide.addText(description, {
+            x: 5.2,
+            y: 2.0,
+            w: 4.0,
+            h: 3.5,
+            fontSize: 16,
+            color: "FFFFFF",
+            valign: pres.AlignV.top,
+            align: pres.AlignH.left,
+            bullet: false
+          });
+        } catch (err) {
+          console.error("Error capturing quadrant chart:", err);
+        }
+
+        // ------------------------
+        // Line Chart Slide
+        // ------------------------
+        // We assume that for each grid, the corresponding line charts are stored in chartInstances 
+        // under the key "chartsContainer" + gridSuffix.
+        const chartsKey = "chartsContainer" + gridSuffix;
+        if (chartInstances[chartsKey]) {
+          let lineCharts = chartInstances[chartsKey];
+          let lineSlide = pres.addSlide({ masterName: "MASTER_SLIDE" });
+          lineSlide.addText(`Line Charts for Grid ${gridSuffix}`, {
+            x: 0.3,
+            y: 0.25,
+            w: 9,
+            fontSize: 24,
+            bold: true,
+            color: "FFFFFF"
+          });
+
+          const numCharts = lineCharts.length;
+          // For this example, we divide the available width (9 inches) equally among the charts.
+          const availableWidth = 9;
+          const chartWidth = availableWidth / numCharts;
+          // Using a fixed ratio for height (e.g., 2:1 width:height)
+          const chartHeight = chartWidth / 2;
+
+          // Loop over each line chart and add it to the slide
+          for (let i = 0; i < numCharts; i++) {
+            const chartObj = lineCharts[i];
+            // Capture the line chart image from the canvas
+            const imageData = chartObj.chart.canvas.toDataURL("image/png");
+            const xPos = 0.5 + i * chartWidth; // starting at 0.5 inch margin
+
+            // Optionally, generate a description for each line chart
+            const indicatorText = chartObj.indicatorSelect.options[chartObj.indicatorSelect.selectedIndex].text;
+            const promptText = `Provide a concise description for a chart showing ${indicatorText} trends.`;
+            const description = await generateDescription(promptText);
+
+            // Add the dropdown snapshot if desired (similar to quadrant, this is optional)
+            let dropdownImageData = "";
+            try {
+              const rect = chartObj.indicatorSelect.getBoundingClientRect();
+              const dropdownCanvas = await html2canvas(chartObj.indicatorSelect, {
+                scale: window.devicePixelRatio,
+                useCORS: true,
+                allowTaint: false
+              });
+              dropdownImageData = dropdownCanvas.toDataURL("image/png");
+            } catch (err) {
+              console.error("Error capturing dropdown element:", err);
+            }
+            if (dropdownImageData) {
+              lineSlide.addImage({
+                data: dropdownImageData,
+                x: xPos,
+                y: 0.8,
+                w: pxToInches(chartObj.indicatorSelect.getBoundingClientRect().width),
+                h: pxToInches(chartObj.indicatorSelect.getBoundingClientRect().height),
+                sizing: { type: "contain" }
+              });
+            }
+
+            // Add the line chart image
+            lineSlide.addImage({
+              data: imageData,
+              x: xPos,
+              y: 1.3,
+              w: chartWidth - 0.2,
+              h: chartHeight,
+              sizing: { type: "contain", w: chartWidth - 0.2, h: chartHeight }
+            });
+
+            // Add the description below the chart image
+            lineSlide.addText(description, {
+              x: xPos,
+              y: 1.3 + chartHeight + 0.2,
+              w: chartWidth - 0.2,
+              h: 1.5,
+              fontSize: 14,
+              color: "FFFFFF",
+              valign: pres.AlignV.top,
+              align: pres.AlignH.left,
+              bullet: false
+            });
+          }
+        }
+      }
+
+      // Write the presentation file with a professional filename.
+      pres.writeFile({ fileName: "Professional_Dashboard_Presentation.pptx" });
+    }
+
+
+    document.getElementById("createPresentation").addEventListener("click", createPresentation);
+
+
+  </script>
 </body>
 
 </html>
