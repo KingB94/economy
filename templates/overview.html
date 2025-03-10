@@ -853,7 +853,7 @@
             }
             const countryCodes = countryData.map(country => country.id).join(";");
             if (!countryCodes) { throw new Error("No valid country codes found."); }
-            const url = `https://api.worldbank.org/v2/country/${countryCodes}/indicator/${ind}?date=${yearRange}&format=json&per_page=1000`;
+            const url = `https://api.worldbank.org/v2/country/${countryCodes}/indicator/${ind}?date=${yearRange}&format=json&per_page=7310`;
             const result = await fetch(url);
             const data = await result.json();
             if (!data || data.length < 2 || !Array.isArray(data[1])) { throw new Error("Invalid data received from World Bank API."); }
