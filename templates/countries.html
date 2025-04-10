@@ -12,9 +12,25 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- noUiSlider CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.min.css" rel="stylesheet" />
+    <!-- jQuery (falls noch nicht eingebunden) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- jQuery UI CSS and JS -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <style>
+        :root {
+            /* Color Palette */
+            --color-bg: #1a1a1a;
+            --color-bg-light: #1a1a1a;
+            --color-bg-medium: #333333;
+            --color-bg-dark: #1a1a1a;
+            --color-accent: #228B22;
+            --color-text: #fdf0d5;
+            --vue-color: #fdf0d5;
+            --color-border: rgba(255, 255, 255, 0.1);
+            --color-shadow: rgba(0, 0, 0, 0.7);
+        }
+
         /* Reset and full viewport height */
         html,
         body {
@@ -25,8 +41,8 @@
 
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #121212;
-            color: #e0e0e0;
+            background-color: var(--color-bg);
+            color: var(--color-text);
             padding-top: 80px;
             /* increased to account for larger header */
         }
@@ -36,8 +52,9 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: linear-gradient(135deg, #1f1f1f, #323232);
-            color: #e0e0e0;
+            /* Using a gradient with our bg and bg-medium colors */
+            background: linear-gradient(135deg, var(--color-bg), var(--color-bg-medium));
+            color: var(--color-text);
             padding: 0 20px;
             height: 80px;
             box-sizing: border-box;
@@ -46,7 +63,7 @@
             left: 0;
             right: 0;
             z-index: 1100;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 2px 6px var(--color-shadow);
         }
 
         /* Container for header-left and header-controls with smaller gap */
@@ -65,12 +82,12 @@
             font-size: 24px;
             cursor: pointer;
             margin-right: 10px;
-            color: #e0e0e0;
+            color: var(--color-text);
         }
 
         .back-button {
-            background-color: #323232;
-            color: #e0e0e0;
+            background-color: var(--color-bg-medium);
+            color: var(--color-text);
             border: none;
             padding: 8px 16px;
             border-radius: 4px;
@@ -81,7 +98,7 @@
         }
 
         .back-button:hover {
-            background-color: #3d3d3d;
+            background-color: var(--color-bg-medium);
         }
 
         /* New header controls container for the slider and dropdown title */
@@ -118,9 +135,9 @@
         }
 
         .country-title-container select {
-            background-color: #1f1f1f;
-            border: 1px solid #3d3d3d;
-            color: #e0e0e0;
+            background-color: var(--color-bg-dark);
+            border: 1px solid var(--color-border);
+            color: var(--color-text);
             padding: 4px 8px;
             border-radius: 4px;
             font-size: large;
@@ -149,7 +166,7 @@
             font-size: 24px;
             cursor: pointer;
             margin-left: 10px;
-            color: #e0e0e0;
+            color: var(--color-text);
         }
 
         /* ---------- Navigation Sidebar ---------- */
@@ -159,12 +176,12 @@
             position: fixed;
             top: 0;
             left: -250px;
-            background-color: #1f1f1f;
+            background-color: var(--color-bg);
             overflow-x: hidden;
             transition: left 0.3s ease;
             z-index: 1200;
             padding-top: 80px;
-            color: #e0e0e0;
+            color: var(--color-text);
         }
 
         .sidebar.active {
@@ -187,25 +204,24 @@
 
         .sidebar .main-nav ul li {
             padding: 15px 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid var(--color-border);
         }
 
         .sidebar .main-nav ul li a {
             text-decoration: none;
-            color: #e0e0e0;
+            color: var(--color-text);
             font-weight: 500;
             display: block;
             transition: background-color 0.2s ease;
         }
 
         .sidebar .main-nav ul li.active a {
-            background-color: #444;
-            /* example background */
+            background-color: var(--color-bg-medium);
             font-weight: bold;
         }
 
         .sidebar .main-nav ul li a:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--color-border);
             border-radius: 4px;
         }
 
@@ -216,7 +232,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: var(--color-shadow);
             z-index: 1150;
             display: none;
         }
@@ -232,7 +248,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.4);
+            background: var(--color-shadow);
             backdrop-filter: blur(5px);
             z-index: 1500;
             display: none;
@@ -263,10 +279,10 @@
         }
 
         .charts-grid .chart {
-            background: #1f1f1f;
-            border: 1px solid #3d3d3d;
+            background: var(--color-bg);
+            border: 1px solid var(--color-border);
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 2px 8px var(--color-shadow);
             position: relative;
             overflow: hidden;
             height: 360px;
@@ -282,7 +298,7 @@
         /* ---------- Chart Source Label ---------- */
         .chart-source {
             font-size: 10px;
-            color: #e0e0e0;
+            color: var(--color-text);
             opacity: 0.7;
             pointer-events: none;
             margin-top: 5px;
@@ -298,10 +314,10 @@
         }
 
         .iframe-grid .chart {
-            background: #1f1f1f;
-            border: 1px solid #3d3d3d;
+            background: var(--color-bg);
+            border: 1px solid var(--color-border);
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 2px 8px var(--color-shadow);
             position: relative;
             overflow: hidden;
             height: 360px;
@@ -332,10 +348,10 @@
 
         /* Custom Chart styling to match the static charts */
         .custom-chart {
-            background: #1f1f1f;
-            border: 1px solid #3d3d3d;
+            background: var(--color-bg);
+            border: 1px solid var(--color-border);
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 2px 8px var(--color-shadow);
             height: 400px;
             padding-bottom: 60px;
             position: relative;
@@ -349,9 +365,9 @@
         }
 
         .custom-chart select {
-            background-color: #1f1f1f;
-            border: 1px solid #3d3d3d;
-            color: #e0e0e0;
+            background-color: var(--color-bg);
+            border: 1px solid var(--color-border);
+            color: var(--color-text);
             padding: 4px 8px;
             border-radius: 4px;
             margin-bottom: 10px;
@@ -359,7 +375,7 @@
 
         .custom-chart .chart-source {
             font-size: 10px;
-            color: #e0e0e0;
+            color: var(--color-text);
             opacity: 0.7;
             pointer-events: none;
             margin-top: 5px;
@@ -375,8 +391,8 @@
             font-size: 18px;
             cursor: pointer;
             z-index: 10;
-            color: #e0e0e0;
-            background: rgba(0, 0, 0, 0.4);
+            color: var(--color-text);
+            background: var(--color-bg-dark);
             padding: 2px 6px;
             border-radius: 4px;
             transition: background-color 0.2s ease;
@@ -384,7 +400,7 @@
 
         .chart .expand-icon:hover,
         .custom-chart .expand-icon:hover {
-            background: rgba(0, 0, 0, 0.6);
+            background: var(--color-bg-dark);
         }
 
         /* ---------- Expanded view styling ---------- */
@@ -396,33 +412,47 @@
             width: 80%;
             height: 80%;
             z-index: 2000;
-            background-color: #1f1f1f;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+            background-color: var(--color-bg);
+            box-shadow: 0 2px 8px var(--color-shadow);
             transition: all 0.3s ease;
         }
 
         /* ---------- Custom Chart Placeholder Styling ---------- */
         .custom-chart-placeholder {
-            background: #1f1f1f;
-            border: 1px dashed #3d3d3d;
+            background: var(--color-bg);
+            border: 1px dashed var(--color-border);
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 2px 8px var(--color-shadow);
             height: 360px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 48px;
-            color: #e0e0e0;
+            color: var(--color-text);
             cursor: pointer;
             transition: background 0.3s ease;
         }
 
         .custom-chart-placeholder:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--color-border);
         }
 
-        .noUi-connect {
-            background: rgba(50, 50, 50, 0.9);
+        /* ---------- UI Slider ---------- */
+        .ui-slider-handle {
+            border-radius: 50%;
+            border: 2px solid var(--color-text);
+            background: var(--color-bg-medium);
+            width: 20px;
+            height: 20px;
+        }
+
+        .ui-widget.ui-widget-content {
+            border: 1px solid #c5c5c5;
+            background-color: var(--vue-color)
+        }
+
+        .ui-widget-header {
+            background-color: var(--color-bg-medium)
         }
 
         /* ---------- Responsive adjustments ---------- */
@@ -458,7 +488,7 @@
         <span class="close-sidebar" id="closeSidebar">&times;</span>
         <nav class="main-nav">
             <ul>
-                <li ><a href="{{ url_for('overview') }}">Overview</a></li>
+                <li><a href="{{ url_for('overview') }}">Overview</a></li>
                 <li class="active"><a href="{{ url_for('countries') }}">Country Deep Dive</a></li>
                 <li><a href="{{ url_for('comparative') }}">Comparative View</a></li>
                 <li><a href="{{ url_for('data') }}">Data</a></li>
@@ -538,9 +568,6 @@
         <!-- Custom Charts Container -->
         <div id="customChartsContainer"></div>
     </div>
-
-    <!-- noUiSlider JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.min.js"></script>
     <script>
         // Array of available indicators for custom charts
         const availableIndicators = [
@@ -579,6 +606,11 @@
         });
         const accountIcon = document.getElementById('accountIcon');
         accountIcon.addEventListener('click', () => { window.location.href = "{{url_for('account')}}"; });
+
+        const titleColor = getComputedStyle(document.documentElement)
+            .getPropertyValue('--color-text').trim();
+
+        Chart.defaults.plugins.title.color = titleColor;
 
         // Global chart variables so we can update them later
         let chartGDP, chartGDPPerCapita, chartPopulation, chartInflation;
@@ -625,10 +657,8 @@
 
         // Update custom charts when filters change
         function updateCustomCharts() {
-            const sliderElem = document.getElementById('timeSlider');
-            const sliderValues = sliderElem.noUiSlider ? sliderElem.noUiSlider.get() : [2010, 2020];
-            const startYear = parseInt(sliderValues[0]);
-            const endYear = parseInt(sliderValues[1]);
+            const startYear = parseInt($("#timeSlider").slider("values", 0));
+            const endYear = parseInt($("#timeSlider").slider("values", 1));
             document.querySelectorAll("#customChartsContainer .custom-chart").forEach(chartContainer => {
                 const canvas = chartContainer.querySelector("canvas");
                 const select = chartContainer.querySelector("select");
@@ -648,7 +678,7 @@
         // Populate the country dropdown and update deep dive when changed.
         async function populateCountryDropdown(defaultCountry) {
             try {
-                const response = await fetch("{{ url_for('static', filename='countries.json') }}");
+                const response = await fetch("countries.json");
                 const countries = await response.json();
                 countriesList = countries;
                 const dropdown = document.getElementById("countryDropdown");
@@ -675,50 +705,54 @@
             document.getElementById("countryFlag").alt = countryInfo.name + " Flag";
             document.getElementById("gapminderIframe").src = `//www.gapminder.org/tools/?embedded=true#$model$markers$pyramid$data$filter$dimensions$geo$/$or@$geo$/$in@=${countryIso3.toLowerCase()};;;;;;;;;;;&chart-type=popbyage&url=v2`;
             document.getElementById("mountainIframe").src = `//www.gapminder.org/tools/?embedded=true#$model$markers$mountain$data$filter$dimensions$geo$/$or@$geo$/$in@=${countryIso3.toLowerCase()};;;;;;;;;&billy$encoding$selected$data$;;;;;;&chart-type=mountain&url=v2`;
-            const sliderElem = document.getElementById('timeSlider');
-            const sliderValues = sliderElem.noUiSlider ? sliderElem.noUiSlider.get() : [2010, 2020];
-            await updateCharts(parseInt(sliderValues[0]), parseInt(sliderValues[1]));
+
+            // Den Slider-Wert mit jQuery UI abfragen:
+            const startYear = parseInt($("#timeSlider").slider("values", 0));
+            const endYear = parseInt($("#timeSlider").slider("values", 1));
+
+            await updateCharts(startYear, endYear);
             updateCustomCharts();
         }
 
-        document.addEventListener("DOMContentLoaded", async () => {
+        $(document).ready(async function () {
+            // Initialize the slider first
+            $("#timeSlider").slider({
+                range: true,
+                min: 1960,
+                max: 2024,
+                values: [2010, 2020],
+                step: 1,
+                slide: function (event, ui) {
+                    $("#sliderValue").text(`From ${ui.values[0]} to ${ui.values[1]}`);
+                },
+                change: async function (event, ui) {
+                    const startYear = ui.values[0];
+                    const endYear = ui.values[1];
+                    await updateCharts(startYear, endYear);
+                    updateCustomCharts();
+                }
+            });
+            // Set the initial slider value text
+            $("#sliderValue").text(`From ${$("#timeSlider").slider("values", 0)} to ${$("#timeSlider").slider("values", 1)}`);
+
+            // Now that the slider is ready, populate the dropdown and update deep dive
             const urlParams = new URLSearchParams(window.location.search);
             const urlCountry = urlParams.get("country");
             const defaultCountry = urlCountry || "USA";
             await populateCountryDropdown(defaultCountry);
-            const dropdown = document.getElementById("countryDropdown");
-            dropdown.addEventListener("change", (e) => {
+
+            // Bind change event for the country dropdown
+            $('#countryDropdown').on('change', function (e) {
                 updateDropdownWidth();
                 updateDeepDive(e.target.value);
             });
-            const slider = document.getElementById('timeSlider');
-            noUiSlider.create(slider, {
-                start: [2010, 2020],
-                connect: true,
-                step: 1,
-                range: {
-                    'min': 1960,
-                    'max': 2024
-                },
-                format: {
-                    to: value => Math.round(value),
-                    from: value => Number(value)
-                }
-            });
-            const sliderValue = document.getElementById('sliderValue');
-            slider.noUiSlider.on('update', function (values) {
-                sliderValue.textContent = `From ${values[0]} to ${values[1]}`;
-            });
-            slider.noUiSlider.on('set', async function (values) {
-                const startYear = values[0];
-                const endYear = values[1];
-                await updateCharts(startYear, endYear);
-                updateCustomCharts();
-            });
+
             await updateCharts(2010, 2020);
             initExpandIcons();
             ensureCustomChartPlaceholders();
         });
+
+
 
         async function updateCharts(startYear, endYear) {
             const gdpIndicator = "NY.GDP.MKTP.CD";
@@ -755,7 +789,8 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
-                            title: { display: true, text: `GDP (Trillion USD) ${startYear}-${endYear}` }
+                            title: { display: true, text: `GDP (Trillion USD) ${startYear}-${endYear}` },
+                            legend: { display: false}
                         }
                     }
                 });
@@ -777,7 +812,8 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
-                            title: { display: true, text: `GDP per Capita PPP (Thousand USD) ${startYear}-${endYear}` }
+                            title: { display: true, text: `GDP per Capita PPP (Thousand USD) ${startYear}-${endYear}` },
+                            legend: { display: false}
                         }
                     }
                 });
@@ -799,7 +835,8 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
-                            title: { display: true, text: `Population (Millions) ${startYear}-${endYear}` }
+                            title: { display: true, text: `Population (Millions) ${startYear}-${endYear}` },
+                            legend: { display: false}
                         }
                     }
                 });
@@ -821,7 +858,8 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
-                            title: { display: true, text: `Inflation (%) ${startYear}-${endYear}` }
+                            title: { display: true, text: `Inflation (%) ${startYear}-${endYear}` },
+                            legend: { display: false}
                         }
                     }
                 });
@@ -868,10 +906,9 @@
         }
 
         async function createCustomChartInstanceInPlace(placeholder) {
-            const sliderElem = document.getElementById('timeSlider');
-            const sliderValues = sliderElem.noUiSlider ? sliderElem.noUiSlider.get() : [2010, 2020];
-            const startYear = parseInt(sliderValues[0]);
-            const endYear = parseInt(sliderValues[1]);
+            // Werte vom jQuery UI Slider abrufen:
+            const startYear = parseInt($("#timeSlider").slider("values", 0));
+            const endYear = parseInt($("#timeSlider").slider("values", 1));
 
             const chartDiv = document.createElement("div");
             chartDiv.classList.add("custom-chart");
@@ -920,7 +957,8 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        title: { display: true, text: `${availableIndicators.find(x => x.value === indicator).text} ${startYear}-${endYear}` }
+                        title: { display: true, text: `${availableIndicators.find(x => x.value === indicator).text} ${startYear}-${endYear}` },
+                        legend: { display: false}
                     }
                 }
             });
@@ -938,6 +976,7 @@
 
             ensureCustomChartPlaceholders();
         }
+
 
         function ensureCustomChartPlaceholders() {
             const container = document.getElementById("customChartsContainer");
