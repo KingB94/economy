@@ -678,7 +678,7 @@
         // Populate the country dropdown and update deep dive when changed.
         async function populateCountryDropdown(defaultCountry) {
             try {
-                const response = await fetch("countries.json");
+                const response = await fetch("{{ url_for('static', filename='countries.json') }}");
                 const countries = await response.json();
                 countriesList = countries;
                 const dropdown = document.getElementById("countryDropdown");
