@@ -1,0 +1,9 @@
+{
+  "filter.selectYearRange": "Seleccionar rango de años:",
+  "filter.selectedYears": "Años seleccionados",
+  "filter.selectCountries": "Seleccionar países:",
+  "button.addChartGrid": "Agregar cuadrícula de gráficos",
+  "button.createPresentation": "Crear presentación",
+  "button.saveState": "Guardar estado",
+  "account.openColorPicker": "Abrir selector de colores"
+}

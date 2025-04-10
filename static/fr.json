@@ -1,0 +1,9 @@
+{
+  "filter.selectYearRange": "Sélectionner la plage d'années :",
+  "filter.selectedYears": "Années sélectionnées",
+  "filter.selectCountries": "Sélectionner les pays :",
+  "button.addChartGrid": "Ajouter une grille de graphiques",
+  "button.createPresentation": "Créer une présentation",
+  "button.saveState": "Enregistrer l'état",
+  "account.openColorPicker": "Ouvrir le sélecteur de couleurs"
+}
