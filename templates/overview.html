@@ -2009,9 +2009,9 @@
     // --- End state persistence functions ---
   </script>
   <script>
-
-    function loadTranslations(language) {
-      fetch('./' + language + '.json')
+  const translationBaseUrl = "{{ url_for('static', filename='') }}";
+  function loadTranslations(language) {
+    fetch(translationBaseUrl + language + '.json')
         .then(response => response.json())
         .then(translations => {
           document.querySelectorAll('[data-i18n]').forEach(element => {
