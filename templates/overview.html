@@ -1125,7 +1125,7 @@
       const ind = indicator || "NY.GDP.PCAP.CD";
       let countryData = countriesInfo;
       if (!countryData) {
-        const response = await fetch("countries.json");
+        const response = await fetch("{{ url_for('static', filename='countries.json') }}");
         countryData = await response.json();
       }
       const countryCodes = countryData.map(country => country.id).join(";");
@@ -1756,8 +1756,8 @@
     }
     let worldGeoJSON = null;
     Promise.all([
-      fetch("countries.json").then(response => response.json()),
-      d3.json("world.geojson")
+      fetch("{{ url_for('static', filename='countries.json') }}").then(response => response.json()),
+      d3.json("{{ url_for('static', filename='world.geojson') }}")
     ]).then(([countriesData, worldData]) => {
       countriesInfo = countriesData;
       window.countriesInfo = countriesData;
