@@ -1091,7 +1091,7 @@
         return color;
       }
     });
-    
+
     // Close the modal when the close icon is clicked
     document.getElementById("closeModal").addEventListener("click", function () {
       document.getElementById("subscriptionModal").style.display = "none";
@@ -1189,7 +1189,7 @@
   </script>
   <!-- Load countries.json and assign to global variable -->
   <script>
-    fetch("countries.json")
+    fetch("{{ url_for('static', filename='countries.json') }}")
       .then(response => response.json())
       .then(data => { window.countriesInfo = data; })
       .catch(error => { console.error("Error loading countries.json:", error); });
