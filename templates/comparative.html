@@ -15,11 +15,13 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-  <!-- jQuery (required for noUiSlider, Chart.js, D3, etc.) -->
+  <!-- jQuery (required for Chart.js, D3, etc.) -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <!-- noUiSlider CSS and JS -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.css" rel="stylesheet" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.js"></script>
+
+  <!-- jQuery UI (for slider functionality) -->
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- D3.js -->
@@ -32,10 +34,46 @@
   <script src="https://cdn.jsdelivr.net/npm/@riophae/vue-treeselect@0.4.0/dist/vue-treeselect.umd.min.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@riophae/vue-treeselect@0.4.0/dist/vue-treeselect.min.css">
 
+  <!-- select2 dropdown for language selection-->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
   <!-- PptxGenJS for Presentation Creation -->
   <script defer src="https://unpkg.com/pptxgenjs/dist/pptxgen.bundle.js"></script>
 
   <style>
+    :root {
+      /* Color Palette */
+      --color-bg: #1a1a1a;
+      --color-bg-light: #1a1a1a;
+      --color-bg-medium: #333333;
+      --color-bg-dark: #1a1a1a;
+      --color-primary: #DB7C26;
+      /* used for quadrant accents */
+      --color-secondary: #C1121F;
+      --color-tertiary: #669BBC;
+      --color-accent: #228B22;
+      --color-text: #fdf0d5;
+      --vue-color: #fdf0d5;
+      --color-border: rgba(255, 255, 255, 0.1);
+      --color-shadow: rgba(0, 0, 0, 0.7);
+
+      /* Quadrants */
+      --quadrant-q1: #C1121F;
+      --quadrant-q2: #DB7C26;
+      --quadrant-q3: #669BBC;
+      --quadrant-q4: #DB7C26;
+
+      /* Typography */
+      --font-primary: 'Montserrat', sans-serif;
+      --font-secondary: 'Roboto', sans-serif;
+
+      /* Sizing */
+      --header-height: 80px;
+      --sidebar-width: 250px;
+      --transition-speed: 0.3s;
+    }
+
     /* ---------- Global Reset & Base Styles ---------- */
     * {
       box-sizing: border-box;
@@ -43,35 +81,43 @@
 
     body {
       margin: 0;
-      font-family: 'Montserrat', sans-serif;
-      background: #121212;
-      color: #e0e0e0;
-      padding-top: 0;
+      font-family: var(--font-primary);
+      background: var(--color-bg);
+      color: var(--color-text);
     }
 
     /* ---------- Integrated Header ---------- */
     .header {
       position: fixed;
-      height: 80px;
       top: 0;
       left: 0;
       right: 0;
+      height: var(--header-height);
       z-index: 1100;
-      background: linear-gradient(135deg, #1f1f1f, #323232);
+      background: var(--color-bg-light);
       padding: 10px 20px;
       display: flex;
       align-items: center;
-      flex-wrap: nowrap;
-      font-family: 'Roboto', sans-serif;
+      font-family: var(--font-secondary);
     }
 
     .header-item {
       padding: 0 10px;
     }
 
-    .header-menu,
+    /* Make sure the header menu uses flex layout */
+    .header-menu {
+      display: flex;
+      align-items: center;
+    }
+
     .header-account {
       flex: 0.5;
+    }
+
+    /* Add some left margin to the dropdown for a gap */
+    #savedDashboardsSelect+.select2-container {
+      margin-left: 20px;
     }
 
     .header-headline {
@@ -93,7 +139,7 @@
     .account-icon {
       font-size: 24px;
       cursor: pointer;
-      color: #e0e0e0;
+      color: var(--color-text);
     }
 
     header h1 {
@@ -107,7 +153,7 @@
       font-size: 14px;
       margin-bottom: 4px;
       display: block;
-      color: #e0e0e0;
+      color: var(--color-text);
     }
 
     /* New Mobile Header Styles */
@@ -152,18 +198,18 @@
 
     /* ---------- Navigation Sidebar ---------- */
     .sidebar {
-      height: 100%;
-      width: 250px;
       position: fixed;
       top: 0;
       left: -250px;
-      background-color: #1f1f1f;
+      width: var(--sidebar-width);
+      height: 100%;
+      background-color: var(--color-bg-light);
       overflow-x: hidden;
-      transition: left 0.3s ease;
+      transition: left var(--transition-speed) ease;
       z-index: 1200;
       padding-top: 60px;
-      color: #e0e0e0;
-      font-family: 'Roboto', sans-serif;
+      color: var(--color-text);
+      font-family: var(--font-secondary);
     }
 
     .sidebar.active {
@@ -176,7 +222,7 @@
       right: 20px;
       font-size: 24px;
       cursor: pointer;
-      color: #e0e0e0;
+      color: var(--color-text);
     }
 
     .sidebar .main-nav ul {
@@ -187,12 +233,12 @@
 
     .sidebar .main-nav ul li {
       padding: 15px 20px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid var(--color-border);
     }
 
     .sidebar .main-nav ul li a {
       text-decoration: none;
-      color: #e0e0e0;
+      color: var(--color-text);
       font-weight: 500;
       display: block;
     }
@@ -200,7 +246,6 @@
     .sidebar .main-nav ul li.active a {
       background-color: #444;
       font-weight: bold;
-      color: #e0e0e0;
     }
 
     .sidebar .main-nav ul li a:hover {
@@ -227,8 +272,7 @@
     /* ---------- Dashboard Container ---------- */
     .dashboard-container {
       width: 100%;
-      margin: 80px auto 20px auto;
-      padding: 20px;
+      margin: var(--header-height) auto 20px auto;
     }
 
     /* ---------- Chart Grids Container ---------- */
@@ -247,12 +291,11 @@
       gap: 20px;
       width: 100%;
       max-width: 100%;
-      box-sizing: border-box;
       padding: 20px;
       margin-bottom: 10px;
-      background: #1e1e1e;
+      background: var(--color-bg-dark);
       border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
+      box-shadow: 0 4px 8px var(--color-shadow);
       position: relative;
     }
 
@@ -265,27 +308,42 @@
     /* ---------- Quadrant Chart ---------- */
     #quadrantLeftContainer1,
     [id^="quadrantLeftContainer"] {
-      background: #2c2c2c;
+      background: var(--color-bg-medium);
       padding: 10px;
       border-radius: 6px;
-      box-sizing: border-box;
       position: relative;
     }
 
     #quadrantDropdownContainer1,
     [id^="quadrantDropdownContainer"] {
       margin-bottom: 10px;
+      display: none;
+    }
+
+    /* ---------- Language selection ---------- */
+    .select2-container--open {
+      z-index: 1500 !important;
+    }
+
+    .select2-container--default .select2-selection--single {
+      background-color: var(--vue-color);
+      border: 1px solid #aaa;
+      border-radius: 4px;
+    }
+
+    .select2-container--default .select2-results__option {
+      color: #000 !important;
+      background-color: var(--vue-color);
     }
 
     /* ---------- Line Chart Wrapper ---------- */
     .line-chart-wrapper {
       position: relative;
-      background: #2c2c2c;
+      background: var(--color-bg-medium);
       padding: 10px 10px 30px 10px;
       border-radius: 6px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
       height: 330px;
-      box-sizing: border-box;
       transition: all 0.3s ease;
     }
 
@@ -305,52 +363,88 @@
       padding: 5px 8px;
       margin-bottom: 10px;
       border-radius: 4px;
-      background: #1f1f1f;
-      color: #e0e0e0;
+      background: var(--color-bg-light);
+      color: var(--color-text);
       border: 1px solid #3d3d3d;
     }
 
     /* ---------- Add Chart Button Styling ---------- */
-    #addChartBtn {
-      background: #1f1f1f;
-      color: #e0e0e0;
+    #addChartBtn,
+    #createPresentation,
+    #saveStateBtn {
       border: none;
       padding: 10px 20px;
       margin: 20px auto;
       display: block;
       border-radius: 5px;
-      font-family: 'Roboto', sans-serif;
+      font-family: var(--font-secondary);
       font-size: 16px;
       cursor: pointer;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
       transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    #addChartBtn {
+      background: var(--color-bg-medium);
+      color: var(--color-text);
     }
 
     #addChartBtn:hover {
-      background: #323232;
+      background: var(--color-bg-medium);
       transform: scale(1.05);
     }
 
-    /* ---------- Create Presentation Button Styling ---------- */
     #createPresentation {
-      background: #0056b3;
-      color: #e0e0e0;
-      border: none;
-      padding: 10px 20px;
-      margin: 20px auto;
-      display: block;
-      border-radius: 5px;
-      font-family: 'Roboto', sans-serif;
-      font-size: 16px;
-      cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
-      transition: background 0.3s ease, transform 0.2s ease;
+      background: var(--color-bg-medium);
+      color: var(--color-text);
     }
 
     #createPresentation:hover {
       background: #007bff;
       transform: scale(1.05);
     }
+
+    #saveStateBtn {
+      background: var(--color-bg-medium);
+      color: var(--color-text);
+    }
+
+    #saveStateBtn:hover {
+      background: var(--color-bg-medium);
+      transform: scale(1.05);
+    }
+
+    .buttons-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .buttons-row button i {
+      margin-right: 5px;
+    }
+
+    #openColorPicker {
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-family: var(--font-secondary);
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+      transition: background 0.3s ease, transform 0.2s ease;
+      background: var(--color-bg-medium);
+      color: var(--color-text);
+      /* Optional: adjust margin if needed */
+      margin: 20px auto;
+    }
+
+    #openColorPicker:hover {
+      background: var(--color-bg-medium);
+      transform: scale(1.05);
+    }
+
 
     /* ---------- Expand Button Styling ---------- */
     .expand-btn {
@@ -359,7 +453,7 @@
       right: 10px;
       background: rgba(0, 0, 0, 0.5);
       border: none;
-      color: #e0e0e0;
+      color: var(--color-text);
       border-radius: 3px;
       padding: 4px 6px;
       cursor: pointer;
@@ -386,7 +480,7 @@
     }
 
     .modal-content {
-      background: #1e1e1e;
+      background: var(--color-bg-dark);
       margin: 5% auto;
       padding: 20px;
       border-radius: 8px;
@@ -395,11 +489,7 @@
       position: relative;
     }
 
-    .modal-content canvas {
-      width: 80%;
-      height: 80%;
-    }
-
+    .modal-content canvas,
     .modal-content svg {
       width: 80%;
       height: 80%;
@@ -412,8 +502,101 @@
       top: 10px;
       right: 20px;
       font-size: 28px;
-      color: #e0e0e0;
+      color: var(--color-text);
       cursor: pointer;
+    }
+
+    /* Container for each label–input pair */
+    .color-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    /* Fixed width for labels so they line up */
+    .color-row label {
+      width: 180px;
+      text-align: right;
+      margin-right: 10px;
+    }
+
+    /* Positioniere das User-Info Modal rechts unter dem Account-Icon */
+    #userInfoModal {
+      position: fixed;
+      right: 0px;
+      left: auto;
+      width: 250px;
+      z-index: 1500;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+    }
+
+    /* Styling des Inhalts */
+    .user-info {
+      background: var(--color-bg-dark);
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+      padding: 15px;
+    }
+
+    /* Neue Zeile für den Mode Switch */
+    .mode-switch {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+    }
+
+    .mode-switch i {
+      font-size: 20px;
+      color: var(--color-text);
+    }
+
+    /* Toggle Switch Styling */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 20px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 20px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked+.slider {
+      background-color: #2196F3;
+    }
+
+    input:checked+.slider:before {
+      transform: translateX(20px);
     }
 
     /* ---------- Spinner Overlay Styles ---------- */
@@ -449,21 +632,37 @@
       }
     }
 
-    /* Override Vue Treeselect text color */
+    /* ---------- UI Slider ---------- */
+    .ui-slider-handle {
+      border-radius: 50%;
+      border: 2px solid var(--color-text);
+      background: var(--color-bg-medium);
+      width: 20px;
+      height: 20px;
+    }
+
+    .ui-widget.ui-widget-content {
+      border: 1px solid #c5c5c5;
+      background-color: var(--vue-color)
+    }
+
+    .ui-widget-header {
+      background-color: var(--color-bg-medium)
+    }
+
+    /* ---------- Vue Treeselect Overrides ---------- */
     .vue-treeselect__control,
     .vue-treeselect__single-value,
     .vue-treeselect__placeholder,
     .vue-treeselect__multi-value-item,
     .vue-treeselect__option,
-    .vue-treeselect__label {
-      color: black !important;
-    }
-
+    .vue-treeselect__label,
     .vue-treeselect__value-remove {
       color: black !important;
     }
 
     .vue-treeselect__control {
+      background-color: var(--vue-color);
       height: 36px !important;
       width: 300px !important;
       max-height: 36px !important;
@@ -483,6 +682,8 @@
     .vue-treeselect__multi-value-item {
       white-space: nowrap !important;
       flex: 0 0 auto !important;
+      background-color: var(--vue-color);
+      border: 1px solid black;
     }
 
     .vue-treeselect--searchable:not(.vue-treeselect--disabled) .vue-treeselect__value-container {
@@ -515,30 +716,148 @@
   <div class="overlay" id="overlay"></div>
   <!-- Integrated Header -->
   <header class="header">
-    <!-- Burger Menu Icon (Left) -->
+    <!-- Burger Menu & Saved Dashboards Icon (Left) -->
     <div class="header-item header-menu" style="text-align: left;">
       <i id="burgerIcon" class="burger-icon fas fa-bars"></i>
+      <select id="savedDashboardsSelect" title="Saved Dashboards">
+        <option value="" disabled selected>Select Saved Dashboard</option>
+        <!-- Options to be loaded dynamically -->
+        <option value="dashboard1">Dashboard 1</option>
+        <option value="dashboard2">Dashboard 2</option>
+        <option value="dashboard3">Dashboard 3</option>
+      </select>
     </div>
+
+
     <!-- Headline -->
     <div class="header-item header-headline" style="text-align: center; font-size: 12px;">
       <h1>SIQ Company Economy</h1>
     </div>
     <!-- Year Slider -->
     <div class="header-item header-yearslider" style="text-align: center;">
-      <label for="yearSlider" class="filter-label">Select Year Range:</label>
+      <label for="yearSlider" class="filter-label" data-i18n="filter.selectYearRange"></label>
       <div id="yearSlider"></div>
-      <span id="yearRangeDisplay">Selected Years: 2010 - 2021</span>
+      <span id="yearRangeDisplay">
+        <span class="translation" data-i18n="filter.selectedYears">Selected Years</span>
+        <span id="dynamicYearRange">: 2010 - 2021</span>
+      </span>
     </div>
     <!-- Country Filter -->
     <div class="header-item header-countryfilter" id="vueCountrySelectContainer" style="text-align: center;">
-      <label class="filter-label">Select Countries:</label>
-      <treeselect v-model="value" :multiple="true" :options="options" placeholder="Select countries" />
+      <!--  <label class="filter-label" data-i18n="filter.selectCountries"></label> -->
+      <treeselect v-model="value" :multiple="true" :options="options" placeholder="Select countries"></treeselect>
     </div>
-    <!-- Account Icon (Right) -->
-    <div class="header-item header-account" style="text-align: right;">
-      <i id="accountIcon" class="account-icon fas fa-user"></i>
+    <!-- Language Selector & Account Icon -->
+    <div class="header-item header-right" style="display: flex; align-items: center; margin-left: auto;">
+      <select id="languageSelector">
+        <option value="en" data-flag="gb">English</option>
+        <option value="de" data-flag="de">Deutsch</option>
+        <option value="es" data-flag="es">Español</option>
+        <option value="fr" data-flag="fr">Français</option>
+      </select>
+      <div class="header-account" style="margin-left: 10px;">
+        <i id="accountIcon" class="account-icon fas fa-user"></i>
+      </div>
     </div>
   </header>
+
+  <!-- Benutzer-Info Modal (angepasst) -->
+  <div id="userInfoModal" class="modal" style="display:none;">
+    <div class="modal-content user-info" style="max-width:250px; padding:15px;">
+      <span id="closeUserInfoModal" style="cursor:pointer; float:right;">&times;</span>
+      <h2 data-i18n="account.title">Benutzerkonto</h2>
+      <p data-i18n="account.usernamePlaceholder">Name: [Benutzername]</p>
+      <p data-i18n="account.orgPlaceholder">Organisation: [Organisation]</p>
+
+      <!-- Neue Zeile für den Dark/Light Mode Switch -->
+      <div class="mode-switch">
+        <i class="fas fa-moon"></i>
+        <label class="switch">
+          <input type="checkbox" id="modeToggle">
+          <span class="slider"></span>
+        </label>
+        <i class="fas fa-sun"></i>
+      </div>
+
+      <button id="openColorPicker" data-i18n="account.openColorPicker">Farben anpassen</button>
+    </div>
+  </div>
+
+  <!-- Modal for Color Settings -->
+  <div id="colorModal" class="modal" style="display:none;">
+    <div class="modal-content"
+      style="position:relative; padding:20px; max-width:500px; margin:100px auto; background:#333; border-radius:8px; color:#e0e0e0;">
+      <span id="closeColorModal"
+        style="position:absolute; top:10px; right:15px; font-size:24px; cursor:pointer;">&times;</span>
+      <h2>Customize Colors</h2>
+
+      <!-- Quadrant Colors Section -->
+      <h3>Quadrant Colors</h3>
+      <div id="quadrantColorSettings">
+        <div class="color-row">
+          <label for="q1Color">Quadrant 1:</label>
+          <input type="color" id="q1Color" value="#C1121F">
+        </div>
+        <div class="color-row">
+          <label for="q2Color">Quadrant 2:</label>
+          <input type="color" id="q2Color" value="#DB7C26">
+        </div>
+        <div class="color-row">
+          <label for="q3Color">Quadrant 3:</label>
+          <input type="color" id="q3Color" value="#669BBC">
+        </div>
+        <div class="color-row">
+          <label for="q4Color">Quadrant 4:</label>
+          <input type="color" id="q4Color" value="#DB7C26">
+        </div>
+      </div>
+
+      <hr style="margin:20px 0; border-color: #555;">
+
+      <!-- Dashboard Theme Colors Section -->
+      <h3>Dashboard Theme</h3>
+      <div id="themeSettings">
+        <div class="color-row">
+          <label for="color-bg">Background:</label>
+          <input type="color" id="color-bg" value="#1a1a1a">
+        </div>
+        <div class="color-row">
+          <label for="color-bg-light">Header:</label>
+          <input type="color" id="color-bg-light" value="#1a1a1a">
+        </div>
+        <div class="color-row">
+          <label for="color-bg-medium">Charts Background:</label>
+          <input type="color" id="color-bg-medium" value="#333333">
+        </div>
+        <div class="color-row">
+          <label for="color-bg-dark">Charts Grid Background:</label>
+          <input type="color" id="color-bg-dark" value="#1a1a1a">
+        </div>
+        <div class="color-row">
+          <label for="color-text">Text Color:</label>
+          <input type="color" id="color-text" value="#e0e0e0">
+        </div>
+      </div>
+
+      <!-- Save Colors Button -->
+      <div style="text-align:center; margin-top:20px;">
+        <button id="saveColorsButton" style="margin-top: 50px; padding:10px 20px; font-size:16px; cursor:pointer;">Save
+          colors</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Saved Dashboards Dropdown -->
+  <div id="savedDashboardsDropdown"
+    style="position: absolute; top: 70px; left: 20px; background: var(--color-bg-light); color: var(--color-text); padding: 10px; border: 1px solid var(--color-border); border-radius: 4px; display: none; z-index: 1500;">
+    You have no saved Dashboards yet.
+  </div>
+
+  <script>
+    document.getElementById('languageSelector').addEventListener('change', function (e) {
+      loadTranslations(e.target.value);
+    });
+  </script>
 
   <!-- Dashboard Container -->
   <div class="dashboard-container">
@@ -573,10 +892,18 @@
         </div>
       </div>
     </div>
-    <!-- Add Chart Grid Button -->
-    <button id="addChartBtn">Add Chart Grid</button>
-    <!-- Create Presentation Button -->
-    <button id="createPresentation">Create Presentation</button>
+  </div>
+
+  <div class="buttons-row">
+    <button id="addChartBtn" data-i18n="button.addChartGrid">
+      <i class="fas fa-plus-square"></i> <span class="translation">Add Chart Grid</span>
+    </button>
+    <button id="createPresentation" data-i18n="button.createPresentation">
+      <i class="fas fa-file-powerpoint"></i> <span class="translation">Create Presentation</span>
+    </button>
+    <button id="saveStateBtn" data-i18n="button.saveState">
+      <i class="fas fa-save"></i> <span class="translation">Save State</span>
+    </button>
   </div>
 
   <!-- Modal for Expanded Quadrant Chart -->
@@ -671,9 +998,68 @@
         overlay.classList.remove('active');
       });
       const accountIcon = document.getElementById('accountIcon');
-      accountIcon.addEventListener('click', () => {
-        window.location.href = "{{url_for('account')}}";
+      // Modal open/close functionality
+      const colorModal = document.getElementById('colorModal');
+      const closeColorModal = document.getElementById('closeColorModal');
+
+      // Statt direkt das colorModal zu öffnen, öffne zuerst das userInfoModal
+      document.getElementById('accountIcon').addEventListener('click', () => {
+        document.getElementById('userInfoModal').style.display = 'block';
       });
+
+      // Schließen des userInfoModal
+      document.getElementById('closeUserInfoModal').addEventListener('click', () => {
+        document.getElementById('userInfoModal').style.display = 'none';
+      });
+
+      document.getElementById('saveColorsButton').addEventListener('click', function () {
+        document.getElementById('colorModal').style.display = 'none';
+        updateAllCharts();
+      });
+
+      // Beim Klick auf "Farben anpassen" im userInfoModal öffnest du das colorModal
+      document.getElementById('openColorPicker').addEventListener('click', () => {
+        document.getElementById('userInfoModal').style.display = 'none';
+        document.getElementById('colorModal').style.display = 'block';
+      });
+
+      document.getElementById('modeToggle').addEventListener('change', function () {
+        if (this.checked) {
+          // Light Mode: Alternative Farbwerte definieren (Beispiel)
+          document.documentElement.style.setProperty('--color-bg', '#FFFFFF');
+          document.documentElement.style.setProperty('--color-bg-light', '#F5F5F5');
+          document.documentElement.style.setProperty('--color-bg-medium', '#E0E0E0');
+          document.documentElement.style.setProperty('--color-bg-dark', '#CCCCCC');
+          document.documentElement.style.setProperty('--color-text', '#000000');
+          document.documentElement.style.setProperty('--vue-color', '#FFFFFF');
+          // Weitere Variablen wie primary, secondary etc. können ebenfalls angepasst werden.
+        } else {
+          // Dark Mode: exakt die Werte, die du angegeben hast
+          document.documentElement.style.setProperty('--color-bg', '#1a1a1a');
+          document.documentElement.style.setProperty('--color-bg-light', '#1a1a1a');
+          document.documentElement.style.setProperty('--color-bg-medium', '#333333');
+          document.documentElement.style.setProperty('--color-bg-dark', '#1a1a1a');
+          document.documentElement.style.setProperty('--color-primary', '#DB7C26');
+          document.documentElement.style.setProperty('--color-secondary', '#C1121F');
+          document.documentElement.style.setProperty('--color-tertiary', '#669BBC');
+          document.documentElement.style.setProperty('--color-accent', '#228B22');
+          document.documentElement.style.setProperty('--color-text', '#fdf0d5');
+          document.documentElement.style.setProperty('--vue-color', '#fdf0d5');
+          document.documentElement.style.setProperty('--color-border', 'rgba(255, 255, 255, 0.1)');
+          document.documentElement.style.setProperty('--color-shadow', 'rgba(0, 0, 0, 0.7)');
+        }
+      });
+
+      // Close modal on click of the close button or outside modal content
+      closeColorModal.addEventListener('click', () => {
+        colorModal.style.display = 'none';
+      });
+      window.addEventListener('click', (e) => {
+        if (e.target === colorModal) {
+          colorModal.style.display = 'none';
+        }
+      });
+
       // Attach modal close event listener for quadrant modal
       const closeBtn = document.querySelector("#chartModal .close-modal");
       if (closeBtn) {
@@ -719,23 +1105,82 @@
       "SE.XPD.TOTL.GD.ZS": { unit: "%", formatter: value => d3.format(".1f")(value) + '%' },
       "SI.POV.DDAY": { unit: "", formatter: value => new Intl.NumberFormat().format(value) }
     };
-    const quadrantColors = {
-      q1: '#FF0000',
-      q2: '#FFA500',
-      q3: '#1E90FF',
-      q4: '#FFA500'
-    };
+
+    function getQuadrantColorsFromCSS() {
+      return {
+        q1: getComputedStyle(document.documentElement).getPropertyValue('--quadrant-q1').trim(),
+        q2: getComputedStyle(document.documentElement).getPropertyValue('--quadrant-q2').trim(),
+        q3: getComputedStyle(document.documentElement).getPropertyValue('--quadrant-q3').trim(),
+        q4: getComputedStyle(document.documentElement).getPropertyValue('--quadrant-q4').trim()
+      };
+    }
+
+    const quadrantColors = getQuadrantColorsFromCSS();
+
+
+    function updateQuadrantColors() {
+      // Re-draw or update the quadrant chart using the new quadrantColors
+      // For example, if you have a function drawQuadrantChart(gridSuffix), you can call it:
+      const gridSuffix = '1'; // adjust according to your context
+      resetQuadrantChart(gridSuffix);
+      loadQuadrantData(gridSuffix);
+      drawQuadrantChart(gridSuffix);
+      updateQuadrantChart(gridSuffix);
+    }
+
+    // Attach event listeners to the color inputs:
+    document.getElementById('q1Color').addEventListener('input', function (e) {
+      const newColor = e.target.value;
+      document.documentElement.style.setProperty('--quadrant-q1', newColor);
+      updateAllCharts();
+    });
+    document.getElementById('q2Color').addEventListener('input', function (e) {
+      const newColor = e.target.value;
+      document.documentElement.style.setProperty('--quadrant-q2', newColor);
+      updateAllCharts();
+    });
+    document.getElementById('q3Color').addEventListener('input', function (e) {
+      const newColor = e.target.value;
+      document.documentElement.style.setProperty('--quadrant-q3', newColor);
+      updateAllCharts();
+    });
+    document.getElementById('q4Color').addEventListener('input', function (e) {
+      const newColor = e.target.value;
+      document.documentElement.style.setProperty('--quadrant-q4', newColor);
+      updateAllCharts();
+    });
+    // Update dashboard theme CSS variables dynamically
+    function updateCSSVariable(variable, value) {
+      document.documentElement.style.setProperty(variable, value);
+    }
+
+    document.getElementById('color-bg').addEventListener('input', (e) => {
+      updateCSSVariable('--color-bg', e.target.value);
+    });
+    document.getElementById('color-bg-light').addEventListener('input', (e) => {
+      updateCSSVariable('--color-bg-light', e.target.value);
+    });
+    document.getElementById('color-bg-medium').addEventListener('input', (e) => {
+      updateCSSVariable('--color-bg-medium', e.target.value);
+    });
+    document.getElementById('color-bg-dark').addEventListener('input', (e) => {
+      updateCSSVariable('--color-bg-dark', e.target.value);
+    });
+    document.getElementById('color-text').addEventListener('input', (e) => {
+      updateCSSVariable('--color-text', e.target.value);
+    });
     function getQuadrantColor(xValue, yValue, xScale, yScale) {
+      const currentColors = getQuadrantColorsFromCSS();
       const xMid = (xScale.domain()[0] + xScale.domain()[1]) / 2;
       const yMid = (yScale.domain()[0] + yScale.domain()[1]) / 2;
       if (xValue >= xMid && yValue >= yMid) {
-        return quadrantColors.q1;
+        return currentColors.q1;
       } else if (xValue < xMid && yValue >= yMid) {
-        return quadrantColors.q2;
+        return currentColors.q2;
       } else if (xValue < xMid && yValue < yMid) {
-        return quadrantColors.q3;
+        return currentColors.q3;
       } else {
-        return quadrantColors.q4;
+        return currentColors.q4;
       }
     }
     const abbreviatedFormatter = d3.format(".2s");
@@ -767,7 +1212,6 @@
           if (!meta.hidden && meta.data.length > 0 && dataset.flagUrl) {
             const lastPoint = meta.data[meta.data.length - 1];
             const img = new Image();
-            // Set crossOrigin attribute to avoid tainting the canvas.
             img.crossOrigin = 'anonymous';
             img.src = dataset.flagUrl;
             img.onload = function () {
@@ -953,13 +1397,19 @@
       const yScale = d3.scaleLinear().domain(d3.extent(allPoints, d => d.y)).nice().range([height, 0]);
       const xMid = xScale((xScale.domain()[0] + xScale.domain()[1]) / 2);
       const yMid = yScale((yScale.domain()[0] + yScale.domain()[1]) / 2);
+
+      // Hole die aktuellen Quadrantenfarben dynamisch:
+      const quadrantColors = getQuadrantColorsFromCSS();
+
+      // Definiere die Quadranten mithilfe der aktuellen Farben:
       const quadrants = [
-        { x: 0, y: 0, width: xMid, height: yMid, fill: "#FFA500" },
-        { x: xMid, y: 0, width: width - xMid, height: yMid, fill: "#FF0000" },
-        { x: 0, y: yMid, width: xMid, height: height - yMid, fill: "#1E90FF" },
-        { x: xMid, y: yMid, width: width - xMid, height: height - yMid, fill: "#FFA500" }
+        { x: 0, y: 0, width: xMid, height: yMid, fill: quadrantColors.q2 }, // Top Left
+        { x: xMid, y: 0, width: width - xMid, height: yMid, fill: quadrantColors.q1 }, // Top Right
+        { x: 0, y: yMid, width: xMid, height: height - yMid, fill: quadrantColors.q3 }, // Bottom Left
+        { x: xMid, y: yMid, width: width - xMid, height: height - yMid, fill: quadrantColors.q4 } // Bottom Right
       ];
-      quadrants.forEach((quadrant) => {
+
+      quadrants.forEach(quadrant => {
         g.append("rect")
           .attr("x", quadrant.x)
           .attr("y", quadrant.y)
@@ -967,6 +1417,7 @@
           .attr("height", quadrant.height)
           .attr("fill", quadrant.fill);
       });
+
       const xAxis = d3.axisBottom(xScale).tickFormat(d => {
         let formatted = d3.format(".2s")(d);
         if (indicatorMetadata[xIndicator] && indicatorMetadata[xIndicator].unit === '%') {
@@ -981,6 +1432,7 @@
         }
         return formatted;
       });
+
       g.append("g")
         .attr("class", "axis x-axis")
         .attr("transform", `translate(0,${height})`)
@@ -1002,6 +1454,7 @@
         .attr("x2", width)
         .attr("stroke", "#ccc")
         .attr("stroke-dasharray", "4,4");
+
       state.data.forEach(d => {
         const datum = d.data[d.data.length - 1];
         if (datum) {
@@ -1095,17 +1548,19 @@
         }
       }
     });
-    async function createNewChartInstance(defaultIndicator, containerId) {
+    async function createNewChartInstance(defaultIndicator, containerId, axis) {
       const gridSuffix = containerId.replace('chartsContainer', '');
       await getChartDataForIndicator(defaultIndicator, gridSuffix);
       const chartsContainer = document.getElementById(containerId);
       const chartWrapper = document.createElement("div");
       chartWrapper.classList.add("line-chart-wrapper");
+
       const expandBtn = document.createElement("button");
       expandBtn.className = "expand-btn";
       expandBtn.title = "Expand Chart";
       expandBtn.innerHTML = "⛶";
       chartWrapper.appendChild(expandBtn);
+
       const indicatorSelect = document.createElement("select");
       indicatorSelect.classList.add("indicatorSelect");
       indicators.forEach(ind => {
@@ -1115,19 +1570,30 @@
         indicatorSelect.appendChild(option);
       });
       indicatorSelect.value = defaultIndicator || indicators[0].value;
+
       indicatorSelect.addEventListener("change", () => {
+        // Update the line chart instance
         const instance = chartInstances[containerId].find(obj => obj.indicatorSelect === indicatorSelect);
         if (instance) {
           updateChartInstance(instance, containerId);
-          saveState();
+        }
+        // Sync the corresponding quadrant axis select based on the provided axis parameter.
+        const quadSelect = document.getElementById(`${axis}IndicatorSelect${gridSuffix}`);
+        if (quadSelect) {
+          quadSelect.value = indicatorSelect.value;
+          loadQuadrantData(gridSuffix);
+          updateAllCharts();
         }
       });
+
       chartWrapper.appendChild(indicatorSelect);
+
       const canvas = document.createElement("canvas");
       canvas.id = `chartCanvas${nextChartId++}`;
       canvas.classList.add("chart-canvas");
       chartWrapper.appendChild(canvas);
       chartsContainer.appendChild(chartWrapper);
+
       const ctx = canvas.getContext("2d");
       const newChart = new Chart(ctx, {
         type: 'line',
@@ -1144,9 +1610,11 @@
         },
         plugins: [flagPlugin]
       });
+
       expandBtn.addEventListener("click", () => {
         openLineChartModal(newChart);
       });
+
       if (!chartInstances[containerId]) chartInstances[containerId] = [];
       chartInstances[containerId].push({ chart: newChart, indicatorSelect: indicatorSelect });
     }
@@ -1177,7 +1645,7 @@
         .attr("height", containerHeight)
         .append("g")
         .attr("transform", `translate(${margin.top},${margin.left})`);
-      state.width = containerWidth - margin.left - margin.right;
+      state.width = containerWidth - margin.top - margin.right;
       state.height = containerHeight - margin.top - margin.bottom;
     }
     function getSelectedQuadrantIndicators(gridSuffix) {
@@ -1231,20 +1699,30 @@
       state.yScale = yScale;
       const xMid = xScale((xScale.domain()[0] + xScale.domain()[1]) / 2);
       const yMid = yScale((yScale.domain()[0] + yScale.domain()[1]) / 2);
+
+      // Aktualisiere die Quadrantenfarben dynamisch:
+      const quadrantColors = getQuadrantColorsFromCSS();
+
+      // Definiere die Quadranten mithilfe der aktuell geladenen Farben:
       const quadrants = [
-        { x: 0, y: 0, width: xMid, height: yMid, fill: "#FFA500" },
-        { x: xMid, y: 0, width: state.width - xMid, height: yMid, fill: "#FF0000" },
-        { x: 0, y: yMid, width: xMid, height: state.height - yMid, fill: "#1E90FF" },
-        { x: xMid, y: yMid, width: state.width - xMid, height: state.height - yMid, fill: "#FFA500" }
+        { x: 0, y: 0, width: xMid, height: yMid, fill: quadrantColors.q2 }, // Top Left
+        { x: xMid, y: 0, width: state.width - xMid, height: yMid, fill: quadrantColors.q1 }, // Top Right
+        { x: 0, y: yMid, width: xMid, height: state.height - yMid, fill: quadrantColors.q3 }, // Bottom Left
+        { x: xMid, y: yMid, width: state.width - xMid, height: state.height - yMid, fill: quadrantColors.q4 } // Bottom Right
       ];
-      quadrants.forEach((quadrant) => {
-        state.svgSelection.insert("rect", ":first-child")
+
+      // Hintergrund-Layer für die Quadranten erstellen
+      const backgroundLayer = state.svgSelection.append("g").attr("id", "background-layer");
+      quadrants.forEach(quadrant => {
+        backgroundLayer.append("rect")
           .attr("x", quadrant.x)
           .attr("y", quadrant.y)
           .attr("width", quadrant.width)
           .attr("height", quadrant.height)
           .attr("fill", quadrant.fill);
       });
+
+      // Axen und Mittellinien zeichnen
       state.svgSelection.append("g")
         .attr("class", "axis x-axis")
         .attr("transform", `translate(0,${state.height})`)
@@ -1278,6 +1756,48 @@
         .attr("x2", state.width)
         .attr("stroke", "#ccc")
         .attr("stroke-dasharray", "4,4");
+
+      // Icons-Layer hinzufügen
+      const iconsLayer = state.svgSelection.append("g").attr("id", "icons-layer");
+      const iconSize = 50;
+      const padding = 5;
+      const icons = [
+        {
+          quadrantIndex: 0, iconClass: "fas fa-adjust",      // Top Left
+          x: quadrants[0].x + padding,
+          y: quadrants[0].y + padding
+        },
+        {
+          quadrantIndex: 1, iconClass: "fas fa-fire",        // Top Right
+          x: quadrants[1].x + quadrants[1].width - iconSize - padding,
+          y: quadrants[1].y + padding
+        },
+        {
+          quadrantIndex: 2, iconClass: "fas fa-snowflake",    // Bottom Left
+          x: quadrants[2].x + padding,
+          y: quadrants[2].y + quadrants[2].height - iconSize - padding
+        },
+        {
+          quadrantIndex: 3, iconClass: "fas fa-adjust",       // Bottom Right
+          x: quadrants[3].x + quadrants[3].width - iconSize - padding,
+          y: quadrants[3].y + quadrants[3].height - iconSize - padding
+        }
+      ];
+
+      icons.forEach(item => {
+        iconsLayer.append("foreignObject")
+          .attr("x", item.x)
+          .attr("y", item.y)
+          .attr("width", iconSize)
+          .attr("height", iconSize)
+          .html(`
+        <div xmlns="http://www.w3.org/1999/xhtml" style="font-size:45px; color:#FFFFFF; opacity:0.5;">
+          <i class="${item.iconClass}"></i>
+        </div>
+      `);
+      });
+
+      // Länder-Elemente (Linien und Kreise) zeichnen
       state.data.forEach(d => {
         state.history[d.country.id] = [];
         const g = state.svgSelection.append("g")
@@ -1296,6 +1816,7 @@
           .attr("fill", getRandomColor(1));
       });
     }
+
     function updateQuadrantChart(gridSuffix) {
       const state = getQuadrantState(gridSuffix);
       if (state.currentYearIndex >= state.years.length) return;
@@ -1363,6 +1884,7 @@
       const year = state.years[state.currentYearIndex];
       const { xIndicator, yIndicator } = getSelectedQuadrantIndicators(gridSuffix);
       document.getElementById("modalYearMarker").textContent = "Year: " + year;
+
       state.data.forEach(d => {
         const datum = d.data.find(p => p.year === year);
         if (datum) {
@@ -1370,6 +1892,7 @@
           state.history[d.country.id].push(datum);
         }
       });
+
       const modalSvg = d3.select("#modalQuadrantSvg");
       modalSvg.selectAll("*").remove();
       const modalWidth = +modalSvg.attr("width");
@@ -1384,19 +1907,27 @@
       const yScale = d3.scaleLinear().domain(d3.extent(allPoints, d => d.y)).nice().range([height, 0]);
       const xMid = xScale((xScale.domain()[0] + xScale.domain()[1]) / 2);
       const yMid = yScale((yScale.domain()[0] + yScale.domain()[1]) / 2);
-      [
-        { x: 0, y: 0, width: xMid, height: yMid, fill: "#FFA500" },
-        { x: xMid, y: 0, width: width - xMid, height: yMid, fill: "#FF0000" },
-        { x: 0, y: yMid, width: xMid, height: height - yMid, fill: "#1E90FF" },
-        { x: xMid, y: yMid, width: width - xMid, height: height - yMid, fill: "#FFA500" }
-      ].forEach((q) => {
+
+      // Hole die aktuellen Quadrantenfarben dynamisch aus den CSS-Variablen:
+      const quadrantColors = getQuadrantColorsFromCSS();
+
+      // Definiere die Quadranten mithilfe der aktuellen Farben:
+      const quadrants = [
+        { x: 0, y: 0, width: xMid, height: yMid, fill: quadrantColors.q2 }, // Top Left
+        { x: xMid, y: 0, width: width - xMid, height: yMid, fill: quadrantColors.q1 }, // Top Right
+        { x: 0, y: yMid, width: xMid, height: height - yMid, fill: quadrantColors.q3 }, // Bottom Left
+        { x: xMid, y: yMid, width: width - xMid, height: height - yMid, fill: quadrantColors.q4 } // Bottom Right
+      ];
+
+      quadrants.forEach(q => {
         g.append("rect")
           .attr("x", q.x)
           .attr("y", q.y)
           .attr("width", q.width)
           .attr("height", q.height)
-          .attr("fill", q.fill)
+          .attr("fill", q.fill);
       });
+
       g.append("line")
         .attr("x1", xMid)
         .attr("x2", xMid)
@@ -1411,6 +1942,7 @@
         .attr("x2", width)
         .attr("stroke", "#ccc")
         .attr("stroke-dasharray", "4,4");
+
       state.data.forEach(d => {
         const history = state.history[d.country.id];
         if (!history || history.length === 0) return;
@@ -1451,6 +1983,7 @@
         path.attr("d", lineGenerator(history));
       });
     }
+
     function playQuadrantChart(gridSuffix) {
       const state = getQuadrantState(gridSuffix);
       state.currentYearIndex = 0;
@@ -1495,45 +2028,67 @@
       const newGrid = document.createElement("div");
       newGrid.className = "charts-grid";
       newGrid.id = `grid${gridCount}`;
+
+      // Create a delete button and position it in the top right corner
+      const deleteBtn = document.createElement("button");
+      deleteBtn.className = "delete-grid-btn";
+      deleteBtn.textContent = "✖"; // or use an icon
+      // Style the button (you can also add these rules to your CSS file)
+      deleteBtn.style.position = "absolute";
+      deleteBtn.style.top = "5px";
+      deleteBtn.style.right = "5px";
+      deleteBtn.style.border = "none";
+      deleteBtn.style.background = "transparent";
+      deleteBtn.style.color = "var(--color-text)";
+      deleteBtn.style.cursor = "pointer";
+      // Attach the click event to remove the grid
+      deleteBtn.addEventListener("click", () => {
+        newGrid.remove();
+        // Optionally update state or localStorage here if needed.
+      });
+      newGrid.appendChild(deleteBtn);
+
+      // Create quadrant and line charts containers as before
       const quadrantDiv = document.createElement("div");
       quadrantDiv.className = "quadrant-chart";
       quadrantDiv.setAttribute("data-chart-type", "quadrant");
       quadrantDiv.id = `quadrantLeftContainer${gridCount}`;
       quadrantDiv.innerHTML = `
-        <button class="expand-btn" title="Expand Chart">⛶</button>
-        <div id="quadrantDropdownContainer${gridCount}">
-          <div>
-            <label for="xIndicatorSelect${gridCount}">X-Axis Indicator:</label>
-            <select id="xIndicatorSelect${gridCount}"></select>
-          </div>
-          <div>
-            <label for="yIndicatorSelect${gridCount}">Y-Axis Indicator:</label>
-            <select id="yIndicatorSelect${gridCount}"></select>
-          </div>
-        </div>
-        <div id="quadrantChartContainer${gridCount}" class="quadrant-chart-container" style="height:60vh;"></div>
-        <div id="quadrantControlContainer${gridCount}">
-          <button id="quadrantPlayButton${gridCount}">&#9658;</button>
-          <div id="quadrantYearScale${gridCount}">
-            <div id="yearMarker${gridCount}">-</div>
-          </div>
-        </div>
-      `;
+    <button class="expand-btn" title="Expand Chart">⛶</button>
+    <div id="quadrantDropdownContainer${gridCount}">
+      <div>
+        <label for="xIndicatorSelect${gridCount}">X-Axis Indicator:</label>
+        <select id="xIndicatorSelect${gridCount}"></select>
+      </div>
+      <div>
+        <label for="yIndicatorSelect${gridCount}">Y-Axis Indicator:</label>
+        <select id="yIndicatorSelect${gridCount}"></select>
+      </div>
+    </div>
+    <div id="quadrantChartContainer${gridCount}" class="quadrant-chart-container" style="height:60vh;"></div>
+    <div id="quadrantControlContainer${gridCount}">
+      <button id="quadrantPlayButton${gridCount}">&#9658;</button>
+      <div id="quadrantYearScale${gridCount}">
+        <div id="yearMarker${gridCount}">-</div>
+      </div>
+    </div>
+  `;
       const lineChartsDiv = document.createElement("div");
       lineChartsDiv.className = "line-charts";
       lineChartsDiv.id = `chartsContainer${gridCount}`;
       lineChartsDiv.innerHTML = `<!-- Line charts will be dynamically added here -->`;
+
       newGrid.appendChild(quadrantDiv);
       newGrid.appendChild(lineChartsDiv);
       gridContainer.appendChild(newGrid);
+
       populateQuadrantIndicatorDropdownsForGrid(gridCount);
       document.getElementById("quadrantPlayButton" + gridCount).addEventListener("click", () => {
         playQuadrantChart(gridCount);
       });
-      createNewChartInstance(defaultXIndicator, `chartsContainer${gridCount}`);
-      createNewChartInstance(defaultYIndicator, `chartsContainer${gridCount}`);
+      createNewChartInstance(defaultXIndicator, `chartsContainer${gridCount}`, "x");
+      createNewChartInstance(defaultYIndicator, `chartsContainer${gridCount}`, "y");
       await loadQuadrantData(gridCount);
-      saveState();
     }
     document.getElementById("addChartBtn").addEventListener("click", () => {
       createNewChartGrid();
@@ -1561,19 +2116,28 @@
         }
       }
     }
+    // Reordered initialization for grid 1:
     document.addEventListener("DOMContentLoaded", async () => {
       showSpinner();
 
-      // Initially load state (if any) so that year range and selected countries are set.
+      // For the first grid, first populate the dropdowns.
+      populateQuadrantIndicatorDropdownsForGrid(1);
+
+      // Load state early so that saved filter and grid settings are available.
       loadState();
 
       // Determine how many grids were saved.
       const savedStateStr = localStorage.getItem('dashboardState');
       let savedGridsCount = 1;
+      let savedState = null;
       if (savedStateStr) {
-        const stateObj = JSON.parse(savedStateStr);
-        if (stateObj.grids) {
-          savedGridsCount = Object.keys(stateObj.grids).length;
+        try {
+          savedState = JSON.parse(savedStateStr);
+          if (savedState.grids) {
+            savedGridsCount = Object.keys(savedState.grids).length;
+          }
+        } catch (e) {
+          console.error("Error parsing saved state:", e);
         }
       }
 
@@ -1587,13 +2151,29 @@
       // Now that all grids exist, restore grid-specific settings.
       loadState();
 
-      // Continue with initialization:
-      populateQuadrantIndicatorDropdownsForGrid(1);
       document.getElementById("quadrantPlayButton1").addEventListener("click", () => {
         playQuadrantChart(1);
       });
-      createNewChartInstance(defaultXIndicator, "chartsContainer1");
-      createNewChartInstance(defaultYIndicator, "chartsContainer1");
+
+      // Instead of always using default indicators, check for saved values.
+      let savedLineIndicators = null;
+      if (savedState && savedState.grids && savedState.grids["1"] && savedState.grids["1"].lineChartIndicators) {
+        savedLineIndicators = savedState.grids["1"].lineChartIndicators;
+      }
+
+      // Create new chart instances for chartsContainer1 using saved values if available.
+      if (savedLineIndicators && savedLineIndicators[0]) {
+        createNewChartInstance(savedLineIndicators[0], "chartsContainer1", "x");
+      } else {
+        createNewChartInstance(defaultXIndicator, "chartsContainer1", "x");
+      }
+      if (savedLineIndicators && savedLineIndicators[1]) {
+        createNewChartInstance(savedLineIndicators[1], "chartsContainer1", "y");
+      } else {
+        createNewChartInstance(defaultYIndicator, "chartsContainer1", "y");
+      }
+
+      // Load quadrant data and update the first grid.
       await loadQuadrantData(1);
       updateQuadrantChart(1);
       await updateAllCharts();
@@ -1603,9 +2183,13 @@
         hideSpinner();
       }, 1000);
     });
+
     function populateQuadrantIndicatorDropdownsForGrid(gridSuffix) {
       const xSelect = document.getElementById("xIndicatorSelect" + gridSuffix);
       const ySelect = document.getElementById("yIndicatorSelect" + gridSuffix);
+      // Clear any existing options
+      xSelect.innerHTML = "";
+      ySelect.innerHTML = "";
       indicators.forEach(ind => {
         const optX = document.createElement("option");
         optX.value = ind.value;
@@ -1616,17 +2200,17 @@
         optY.textContent = ind.text;
         ySelect.appendChild(optY);
       });
+      // Explicitly set the default values
       xSelect.value = defaultXIndicator;
       ySelect.value = defaultYIndicator;
+
       xSelect.addEventListener("change", () => {
         loadQuadrantData(gridSuffix);
         updateAllCharts();
-        saveState();
       });
       ySelect.addEventListener("change", () => {
         loadQuadrantData(gridSuffix);
         updateAllCharts();
-        saveState();
       });
     }
     function populateModalDropdowns() {
@@ -1644,8 +2228,12 @@
         optY.textContent = ind.text;
         modalYSelect.appendChild(optY);
       });
-      modalXSelect.value = defaultXIndicator;
-      modalYSelect.value = defaultYIndicator;
+      // Get current selections from the normal view dropdowns (for the current grid)
+      const gridXSelect = document.getElementById("xIndicatorSelect" + currentModalGridSuffix);
+      const gridYSelect = document.getElementById("yIndicatorSelect" + currentModalGridSuffix);
+      modalXSelect.value = gridXSelect ? gridXSelect.value : defaultXIndicator;
+      modalYSelect.value = gridYSelect ? gridYSelect.value : defaultYIndicator;
+
       modalXSelect.addEventListener("change", () => {
         redrawQuadrantChartInModal(currentModalGridSuffix);
       });
@@ -1654,38 +2242,55 @@
       });
     }
   </script>
+
+  <!-- jQuery UI Range Slider Initialization -->
   <script>
-    const yearSlider = document.getElementById("yearSlider");
-    noUiSlider.create(yearSlider, {
-      start: yearRange,
-      connect: true,
-      step: 1,
-      range: { min: 1960, max: 2023 },
-      format: { to: value => Math.round(value), from: value => Number(value) }
+    $(function () {
+      $("#yearSlider").slider({
+        range: true,
+        min: 1960,
+        max: 2023,
+        values: yearRange,
+        slide: function (event, ui) {
+          yearRange = ui.values;
+          var baseText = $("#yearRangeDisplay").find(".translation").text();
+          $("#dynamicYearRange").text(": " + ui.values[0] + " - " + ui.values[1]);
+        },
+        change: function (event, ui) {
+          updateAllCharts();
+        }
+      });
+      var baseText = $("#yearRangeDisplay").find(".translation").text();
+      $("#dynamicYearRange").text(": " + yearRange[0] + " - " + yearRange[1]);
     });
-    yearSlider.noUiSlider.on('update', function (values) {
-      yearRange = values.map(Number);
-      document.getElementById("yearRangeDisplay").textContent = "Selected Years: " + yearRange[0] + " - " + yearRange[1];
-    });
-    yearSlider.noUiSlider.on('change', function () {
-      updateAllCharts();
-      saveState();
-    });
+
   </script>
+
   <script>
     function saveState() {
       const state = {
         filters: {
-          // Save the year slider value as an array (e.g. [2010, 2021])
-          yearRange: yearSlider.noUiSlider.get(),
-          // Save the selected countries (from the Vue component)
-          selectedCountries: window.selectedCountries
-          // Add additional filter settings here if needed
+          yearRange: $("#yearSlider").slider("values"),
+          selectedCountries: window.selectedCountries,
+          language: document.getElementById("languageSelector").value
         },
-        grids: {}
+        grids: {},
+        colors: {
+          colorBg: getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim(),
+          colorBgLight: getComputedStyle(document.documentElement).getPropertyValue('--color-bg-light').trim(),
+          colorBgMedium: getComputedStyle(document.documentElement).getPropertyValue('--color-bg-medium').trim(),
+          colorBgDark: getComputedStyle(document.documentElement).getPropertyValue('--color-bg-dark').trim(),
+          colorText: getComputedStyle(document.documentElement).getPropertyValue('--color-text').trim(),
+          // Speichere die Quadranten-Farben in einem eigenen Objekt:
+          quadrant: {
+            q1: getComputedStyle(document.documentElement).getPropertyValue('--quadrant-q1').trim(),
+            q2: getComputedStyle(document.documentElement).getPropertyValue('--quadrant-q2').trim(),
+            q3: getComputedStyle(document.documentElement).getPropertyValue('--quadrant-q3').trim(),
+            q4: getComputedStyle(document.documentElement).getPropertyValue('--quadrant-q4').trim()
+          }
+        }
       };
 
-      // Save settings for each chart grid (quadrant indicators and line chart indicators)
       const gridElements = document.querySelectorAll(".charts-grid");
       gridElements.forEach(grid => {
         const gridSuffix = grid.id.replace('grid', '');
@@ -1708,39 +2313,63 @@
       });
       localStorage.setItem('dashboardState', JSON.stringify(state));
     }
-
-    // Updated loadState function
     function loadState() {
       const stateStr = localStorage.getItem('dashboardState');
-      if (!stateStr) return;
+      if (!stateStr) {
+        document.getElementById("languageSelector").value = "en";
+        loadTranslations("en");
+        return;
+      }
+
       const state = JSON.parse(stateStr);
 
-      // Restore filters
       if (state.filters) {
+        // Aktualisiere den globalen yearRange-Wert
         if (state.filters.yearRange) {
-          yearSlider.noUiSlider.set(state.filters.yearRange);
-          document.getElementById("yearRangeDisplay").textContent =
-            "Selected Years: " + state.filters.yearRange[0] + " - " + state.filters.yearRange[1];
+          yearRange = state.filters.yearRange;
         }
+
+        // Setze den Slider auf den gespeicherten Jahrbereich
+        if (state.filters.yearRange && $("#yearSlider").hasClass("ui-slider")) {
+          $("#yearSlider").slider("values", state.filters.yearRange);
+          var baseText = $("#yearRangeDisplay").find(".translation").text();
+          $("#yearRangeDisplay").text(
+            baseText + ": " + state.filters.yearRange[0] + " - " + state.filters.yearRange[1]
+          );
+        }
+
         if (state.filters.selectedCountries) {
           window.selectedCountries = state.filters.selectedCountries;
           if (window.vueCountrySelectVm) {
             window.vueCountrySelectVm.value = state.filters.selectedCountries;
           }
         }
-        // Restore additional filters here as needed.
+
+        if (state.filters.language) {
+          document.getElementById("languageSelector").value = state.filters.language;
+          loadTranslations(state.filters.language);
+          $('#languageSelector').trigger('change');
+        } else {
+          document.getElementById("languageSelector").value = "en";
+          loadTranslations("en");
+        }
+      } else {
+        document.getElementById("languageSelector").value = "en";
+        loadTranslations("en");
       }
 
-      // Restore grid-specific settings (quadrant and line chart indicators)
+      // Update grids' settings (if applicable)
       if (state.grids) {
         for (const gridSuffix in state.grids) {
           const gridState = state.grids[gridSuffix];
+
           const xSelect = document.getElementById("xIndicatorSelect" + gridSuffix);
           const ySelect = document.getElementById("yIndicatorSelect" + gridSuffix);
           if (xSelect && ySelect && gridState.quadrantIndicators) {
             xSelect.value = gridState.quadrantIndicators.xIndicator;
             ySelect.value = gridState.quadrantIndicators.yIndicator;
           }
+
           const chartsContainer = document.getElementById("chartsContainer" + gridSuffix);
           if (chartsContainer && gridState.lineChartIndicators) {
             const selects = chartsContainer.querySelectorAll(".indicatorSelect");
@@ -1752,9 +2381,31 @@
           }
         }
       }
+
+      // Lade Farbanpassungen, falls vorhanden
+      if (state.colors) {
+        document.documentElement.style.setProperty('--color-bg', state.colors.colorBg);
+        document.documentElement.style.setProperty('--color-bg-light', state.colors.colorBgLight);
+        document.documentElement.style.setProperty('--color-bg-medium', state.colors.colorBgMedium);
+        document.documentElement.style.setProperty('--color-bg-dark', state.colors.colorBgDark);
+        document.documentElement.style.setProperty('--color-text', state.colors.colorText);
+      }
+      // Prüfe, ob die Quadranten-Farben im State vorhanden sind und setze sie:
+      if (state.colors && state.colors.quadrant) {
+        document.documentElement.style.setProperty('--quadrant-q1', state.colors.quadrant.q1);
+        document.documentElement.style.setProperty('--quadrant-q2', state.colors.quadrant.q2);
+        document.documentElement.style.setProperty('--quadrant-q3', state.colors.quadrant.q3);
+        document.documentElement.style.setProperty('--quadrant-q4', state.colors.quadrant.q4);
+      }
     }
+
     document.addEventListener("DOMContentLoaded", () => {
       loadState();
+    });
+    document.getElementById("saveStateBtn").addEventListener("click", () => {
+      saveState();
+      console.log(localStorage)
+      alert("State saved!");
     });
   </script>
   <script>
@@ -1773,7 +2424,6 @@
             }
           });
           window.selectedCountries = selectedIds;
-          saveState();
           const gridContainer = document.getElementById("chartGridsContainer");
           const grids = gridContainer.querySelectorAll(".charts-grid");
           for (const grid of grids) {
@@ -1784,7 +2434,6 @@
         }
       },
       created() {
-        // Check if a saved state already exists to avoid overwriting with defaults.
         const stateStr = localStorage.getItem('dashboardState');
         let savedCountries = [];
         if (stateStr) {
@@ -1797,7 +2446,7 @@
             console.error("Error parsing saved state:", e);
           }
         }
-        fetch("{{ url_for('static', filename='countries.json') }}")
+        fetch("countries.json")
           .then(response => response.json())
           .then(countries => {
             countriesData = countries;
@@ -1822,7 +2471,6 @@
             } else {
               this.value = ["USA", "CHN", "DEU", "IND"];
               window.selectedCountries = this.value;
-              saveState();
             }
             updateAllCharts();
           })
@@ -1858,59 +2506,67 @@
     });
   </script>
 
+  <!-- Language Selection & Dashboard Selection -->
+  <script>
+    function formatState(state) {
+      if (!state.id) {
+        return state.text;
+      }
+      var flagCode = $(state.element).data('flag');
+      var flagUrl = "https://flagcdn.com/w20/" + flagCode.toLowerCase() + ".png";
+      var $state = $(
+        '<span><img src="' + flagUrl + '" style="width:20px; margin-right:8px;" />' + state.text + '</span>'
+      );
+      return $state;
+    }
+
+    $(document).ready(function () {
+      $('#languageSelector').select2({
+        templateResult: formatState,
+        templateSelection: formatState,
+        minimumResultsForSearch: Infinity,
+        width: '120px'
+      });
+
+      $('#languageSelector').on('change', function (e) {
+        loadTranslations(e.target.value);
+      });
+    });
+
+    // Initialize Select2 on the saved dashboards select element
+    $(document).ready(function () {
+      $('#savedDashboardsSelect').select2({
+        placeholder: "Select Saved Dashboard",
+        minimumResultsForSearch: Infinity,
+        width: '200px' // Adjust the width as needed
+      });
+    });
+  </script>
+  <script>
+    function loadTranslations(language) {
+      fetch('./' + language + '.json')
+        .then(response => response.json())
+        .then(translations => {
+          document.querySelectorAll('[data-i18n]').forEach(element => {
+            const key = element.getAttribute('data-i18n');
+            if (translations[key]) {
+              // Wenn ein Kindelement mit der Klasse "translation" vorhanden ist,
+              // aktualisiere nur dessen Inhalt, ansonsten den gesamten Inhalt.
+              const translationElement = element.querySelector('.translation');
+              if (translationElement) {
+                translationElement.textContent = translations[key];
+              } else {
+                element.textContent = translations[key];
+              }
+            }
+          });
+        })
+        .catch(error => console.error('Error loading translations:', error));
+    }
+  </script>
+
   <!-- Presentation Creation Integration -->
   <script>
-    // Function to generate a description (calls backend endpoint)
-    async function generateDescription(promptText) {
-      try {
-        const response = await fetch("/api/groq_description", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ promptText })
-        });
-        if (!response.ok) {
-          return "Based on the data, there is some super interesting economic data visible and these countries will be affected by it.";
-        }
-        const data = await response.json();
-        return data.description || "Based on the data, there is some super interesting economic data visible and these countries will be affected by it.";
-      } catch (err) {
-        console.error("Error calling description endpoint:", err);
-        return "Based on the data, there is some super interesting economic data visible and these countries will be affected by it.";
-      }
-    }
-    async function svgToDataUrl(svgElement) {
-      // Serialize the SVG element to a string.
-      const serializer = new XMLSerializer();
-      const svgString = serializer.serializeToString(svgElement);
-
-      // Create a Blob from the SVG string.
-      const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-
-      // Create an Image and load the blob URL.
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      return new Promise((resolve, reject) => {
-        img.onload = function () {
-          // Create a canvas with dimensions matching the SVG.
-          const canvas = document.createElement('canvas');
-          canvas.width = svgElement.clientWidth || svgElement.getBoundingClientRect().width;
-          canvas.height = svgElement.clientHeight || svgElement.getBoundingClientRect().height;
-          const ctx = canvas.getContext('2d');
-
-          // Draw the SVG image onto the canvas.
-          ctx.drawImage(img, 0, 0);
-          URL.revokeObjectURL(url);
-          // Return the PNG image as a data URL.
-          resolve(canvas.toDataURL('image/png'));
-        };
-        img.onerror = function (e) {
-          reject(e);
-        };
-        img.src = url;
-      });
-    }
-    // Updated createPresentation function that captures both Chart.js (line) charts and D3 quadrant charts.
     async function generateDescription(promptText) {
       try {
         const response = await fetch("/api/groq_description", {
@@ -1928,26 +2584,55 @@
         return "There is some noteworthy economic trend observed in the data.";
       }
     }
-    // Updated createPresentation function with a professional slide master and consistent layout
+    async function svgToDataUrl(svgElement) {
+      const serializer = new XMLSerializer();
+      const svgString = serializer.serializeToString(svgElement);
+      const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      return new Promise((resolve, reject) => {
+        img.onload = function () {
+          const canvas = document.createElement('canvas');
+          canvas.width = svgElement.clientWidth || svgElement.getBoundingClientRect().width;
+          canvas.height = svgElement.clientHeight || svgElement.getBoundingClientRect().height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          URL.revokeObjectURL(url);
+          resolve(canvas.toDataURL('image/png'));
+        };
+        img.onerror = function (e) {
+          reject(e);
+        };
+        img.src = url;
+      });
+    }
     async function createPresentation() {
-      // Helper function: convert pixels to inches (assuming 96px = 1 inch)
       function pxToInches(px) {
         return px / 96;
       }
 
-      // Create a new presentation and define a slide master
+      // Erstelle eine neue Präsentation
       let pres = new PptxGenJS();
+
+      // Hole die aktuell gesetzten CSS-Variablen
+      const computedStyle = getComputedStyle(document.documentElement);
+      const bgColor = computedStyle.getPropertyValue('--color-bg').trim().replace('#', '');
+      const bgLight = computedStyle.getPropertyValue('--color-bg-light').trim().replace('#', '');
+      const textColor = computedStyle.getPropertyValue('--color-text').trim().replace('#', '');
+
+      // Definiere den Slide Master mithilfe der ausgelesenen Farben
       pres.defineSlideMaster({
         title: "MASTER_SLIDE",
-        background: { fill: "1f1f1f" },
+        background: { fill: bgColor },
         objects: [
-          { rect: { x: 0, y: 0, w: "100%", h: 0.6, fill: { color: "323232" } } },
-          { rect: { x: 0, y: "7.0", w: "100%", h: 0.4, fill: { color: "323232" } } }
+          { rect: { x: 0, y: 0, w: "100%", h: 0.6, fill: { color: bgLight } } },
+          { rect: { x: 0, y: "7.0", w: "100%", h: 0.4, fill: { color: bgLight } } }
         ],
-        slideNumber: { x: 9.0, y: "7.1", color: "FFFFFF" }
+        slideNumber: { x: 9.0, y: "7.1", color: textColor }
       });
 
-      // 1. Title Slide
+      // Titel-Slide hinzufügen
       let titleSlide = pres.addSlide({ masterName: "MASTER_SLIDE" });
       titleSlide.addText("Dashboard Presentation", {
         x: 0.3,
@@ -1955,50 +2640,42 @@
         w: 9,
         fontSize: 32,
         bold: true,
-        color: "FFFFFF"
+        color: textColor
       });
       titleSlide.addText("A Professional Overview of the Data", {
         x: 0.3,
         y: 1,
         w: 9,
         fontSize: 20,
-        color: "FFFFFF"
+        color: textColor
       });
 
-      // 2. Loop over each grid to add slides in the desired order
       const gridContainer = document.getElementById("chartGridsContainer");
-      // Assume each grid has a class 'charts-grid'
       const grids = gridContainer.querySelectorAll(".charts-grid");
 
       for (const grid of grids) {
-        // Extract grid suffix (e.g., '1' from id "grid1")
         const gridSuffix = grid.id.replace("grid", "");
 
-        // ------------------------
-        // Quadrant Chart Slide
-        // ------------------------
         const quadrantContainer = document.getElementById("quadrantChartContainer" + gridSuffix);
         try {
-          // Capture quadrant chart using html2canvas
+          // Erstelle ein Canvas-Bild des Quadrant-Charts
           const canvas = await html2canvas(quadrantContainer, {
             scale: window.devicePixelRatio * 2,
             useCORS: true,
-            allowTaint: false
+            allowTaint: false,
+            backgroundColor: null
           });
           const quadrantImageData = canvas.toDataURL("image/png");
 
-          // Get the indicator texts from the dropdowns
           const xSelect = document.getElementById("xIndicatorSelect" + gridSuffix);
           const ySelect = document.getElementById("yIndicatorSelect" + gridSuffix);
           const xIndicatorText = xSelect ? xSelect.options[xSelect.selectedIndex].text : "X-Axis Indicator";
           const yIndicatorText = ySelect ? ySelect.options[ySelect.selectedIndex].text : "Y-Axis Indicator";
           const chartTitle = `${xIndicatorText} vs ${yIndicatorText}`;
 
-          // Optionally, generate a description (using your generateDescription function)
           const promptText = `Provide a concise description for a quadrant chart showing ${xIndicatorText} vs ${yIndicatorText} trends.`;
           const description = await generateDescription(promptText);
 
-          // Create the quadrant slide
           let quadSlide = pres.addSlide({ masterName: "MASTER_SLIDE" });
           quadSlide.addText(chartTitle, {
             x: 0.3,
@@ -2006,26 +2683,24 @@
             w: 9,
             fontSize: 24,
             bold: true,
-            color: "FFFFFF"
+            color: textColor
           });
 
-          // Add X and Y axis indicator texts on the slide
           quadSlide.addText(`X-Axis: ${xIndicatorText}`, {
             x: 0.55,
             y: 5.1,
             w: 9,
             fontSize: 16,
-            color: "FFFFFF"
+            color: textColor
           });
           quadSlide.addText(`Y-Axis: ${yIndicatorText}`, {
             x: -4.25,
             y: 0.3,
             w: 9,
             fontSize: 16,
-            color: "FFFFFF",
-            rotate: -90  // Rotate the text 90 degrees to the left
+            color: textColor,
+            rotate: -90
           });
-          // Add the quadrant chart image
           quadSlide.addImage({
             data: quadrantImageData,
             x: 0.5,
@@ -2035,14 +2710,13 @@
             sizing: { type: "contain", w: 4.5, h: 3.5 }
           });
 
-          // Add the description
           quadSlide.addText(description, {
             x: 5.2,
             y: 2.0,
             w: 4.0,
             h: 3.5,
             fontSize: 16,
-            color: "FFFFFF",
+            color: textColor,
             valign: pres.AlignV.top,
             align: pres.AlignH.left,
             bullet: false
@@ -2051,11 +2725,6 @@
           console.error("Error capturing quadrant chart:", err);
         }
 
-        // ------------------------
-        // Line Chart Slide
-        // ------------------------
-        // We assume that for each grid, the corresponding line charts are stored in chartInstances 
-        // under the key "chartsContainer" + gridSuffix.
         const chartsKey = "chartsContainer" + gridSuffix;
         if (chartInstances[chartsKey]) {
           let lineCharts = chartInstances[chartsKey];
@@ -2066,29 +2735,23 @@
             w: 9,
             fontSize: 24,
             bold: true,
-            color: "FFFFFF"
+            color: textColor
           });
 
           const numCharts = lineCharts.length;
-          // For this example, we divide the available width (9 inches) equally among the charts.
           const availableWidth = 9;
           const chartWidth = availableWidth / numCharts;
-          // Using a fixed ratio for height (e.g., 2:1 width:height)
           const chartHeight = chartWidth / 2;
 
-          // Loop over each line chart and add it to the slide
           for (let i = 0; i < numCharts; i++) {
             const chartObj = lineCharts[i];
-            // Capture the line chart image from the canvas
             const imageData = chartObj.chart.canvas.toDataURL("image/png");
-            const xPos = 0.5 + i * chartWidth; // starting at 0.5 inch margin
+            const xPos = 0.5 + i * chartWidth;
 
-            // Optionally, generate a description for each line chart
             const indicatorText = chartObj.indicatorSelect.options[chartObj.indicatorSelect.selectedIndex].text;
             const promptText = `Provide a concise description for a chart showing ${indicatorText} trends.`;
             const description = await generateDescription(promptText);
 
-            // Add the dropdown snapshot if desired (similar to quadrant, this is optional)
             let dropdownImageData = "";
             try {
               const rect = chartObj.indicatorSelect.getBoundingClientRect();
@@ -2112,7 +2775,6 @@
               });
             }
 
-            // Add the line chart image
             lineSlide.addImage({
               data: imageData,
               x: xPos,
@@ -2122,14 +2784,13 @@
               sizing: { type: "contain", w: chartWidth - 0.2, h: chartHeight }
             });
 
-            // Add the description below the chart image
             lineSlide.addText(description, {
               x: xPos,
               y: 1.3 + chartHeight + 0.2,
               w: chartWidth - 0.2,
               h: 1.5,
               fontSize: 14,
-              color: "FFFFFF",
+              color: textColor,
               valign: pres.AlignV.top,
               align: pres.AlignH.left,
               bullet: false
@@ -2138,14 +2799,10 @@
         }
       }
 
-      // Write the presentation file with a professional filename.
       pres.writeFile({ fileName: "Professional_Dashboard_Presentation.pptx" });
     }
 
-
     document.getElementById("createPresentation").addEventListener("click", createPresentation);
-
-
   </script>
 </body>
 
