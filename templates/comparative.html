@@ -2446,7 +2446,7 @@
             console.error("Error parsing saved state:", e);
           }
         }
-        fetch("countries.json")
+        fetch("{{ url_for('static', filename='countries.json') }}")
           .then(response => response.json())
           .then(countries => {
             countriesData = countries;
